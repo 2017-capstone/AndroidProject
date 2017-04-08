@@ -1,0 +1,42 @@
+# Android Studio 작업내역 관련 자동 생성 파일
+/.idea/
+/.idea/compiler.xml
+/.idea/copyright/profiles_settings.xml
+/.idea/libraries/
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/scopes/scope_settings.xml
+/.idea/tasks.xml
+/.idea/vcs.xml
+/.idea/workspace.xml
+/.idea/.idea/encodings.xml
+/.idea/.name
+*.iml
+
+# Build 관련 파일
+*.apk
+*.ap_
+/*/build/
+
+
+# Gradle 자동 생성 파일
+.gradle
+
+# Local Configuration 관련 파일(path 등)
+/local.properties
+
+# dev vm 파일
+*.dex
+
+# OS 자동 생성 파일
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trash
+ehthumbs.db
+Thumbs.db
+
+# 기타
+/captures
+.externalNativeBuild
