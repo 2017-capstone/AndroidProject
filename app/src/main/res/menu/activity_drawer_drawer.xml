@@ -2,35 +2,33 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
-    </group>
-
-    <item android:title="Communicate">
+        <item android:title="모아보기">
+            <menu>
+                <item
+                    android:id="@+id/nav_total_tag"
+                    android:icon="@drawable/ic_label"
+                    android:title="모든 태그" />
+                <item
+                    android:id="@+id/nav_total_alarm"
+                    android:icon="@drawable/ic_alarm"
+                    android:title="모든 알람" />
+            </menu>
+        </item>
         <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+        <item
+            android:id="@+id/nav_tag1"
+            android:icon="@drawable/ic_label_outline"
+            android:title="태그 1" />
+        <item
+            android:id="@+id/nav_tag2"
+            android:icon="@drawable/ic_label_outline"
+            android:title="태그 2" />
         </menu>
-    </item>
-
+    </group>
+    <group android:checkableBehavior="single">
+    <item
+        android:id="@+id/nav_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="설정" />
+    </group>
 </menu>

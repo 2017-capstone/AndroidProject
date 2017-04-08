@@ -80,18 +80,20 @@ public class DrawerActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_total_tag) {
+            setTitle("모든 태그");
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_total_alarm) {
+            setTitle("모든 알람");
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_tag1) {
+            setTitle("태그1");
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_tag2) {
+            setTitle("태그2");
 
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        } else if (id == R.id.nav_settings) {
+            setTitle("설정");
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
