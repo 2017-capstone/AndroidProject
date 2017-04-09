@@ -3,6 +3,9 @@ package com.example.penguin.timetagger;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -55,7 +58,7 @@ public class DrawerActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.drawer, menu);
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
         return true;
     }
 
@@ -80,20 +83,21 @@ public class DrawerActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        setTitle(item.getTitle());
+
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
         if (id == R.id.nav_total_tag) {
-            setTitle("모든 태그");
+            transaction.replace(R.id.frame_content, new TaggedItemsFragment());
+            transaction.addToBackStack(null);
+            transaction.commit();
             // Handle the camera action
         } else if (id == R.id.nav_total_alarm) {
-            setTitle("모든 알람");
 
         } else if (id == R.id.nav_tag1) {
-            setTitle("태그1");
 
         } else if (id == R.id.nav_tag2) {
-            setTitle("태그2");
 
         } else if (id == R.id.nav_settings) {
-            setTitle("설정");
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
