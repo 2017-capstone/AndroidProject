@@ -8,6 +8,6 @@ import android.view.ViewGroup;
 
 public class TaggedItemsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.content_view_tagged, container, false);
+        return inflater.inflate(R.layout.content_tagged_list, container, false);
     }
 }
