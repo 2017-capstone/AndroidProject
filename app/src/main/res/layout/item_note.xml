@@ -4,13 +4,16 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content">
-        <!--
+
         <android.support.v7.widget.CardView
+            xmlns:card_view="http://schemas.android.com/apk/res-auto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:cardCornerradius="10dp"
-            app:cardElevation="10dp"
-            app:cardUsecompatpadding="true">
+            card_view:cardCornerradius="10dp"
+            card_view:cardElevation="10dp"
+            card_view:cardUsecompatpadding="true">
+            <!--TODO: 메모 항목을 카드뷰로 정리 할 것
+            디자인 가이드 https://material.io/guidelines/components/cards.html 참조 -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -25,5 +28,4 @@
                         </TextView>
                 </LinearLayout>
         </android.support.v7.widget.CardView>
-        -->
 </RelativeLayout>

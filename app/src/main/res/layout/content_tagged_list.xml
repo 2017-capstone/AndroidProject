@@ -17,6 +17,10 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     tools:layout_editor_absoluteX="8dp"
-                    tools:layout_editor_absoluteY="8dp" />
+                    tools:layout_editor_absoluteY="8dp">
+                        <!--TODO: 카드뷰를 연결 할 것
+                        디자인 가이드 https://material.io/guidelines/components/cards.html
+                        코딩 가이드: http://jizard.tistory.com/23 -->
+                </android.support.v7.widget.RecyclerView>
         </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

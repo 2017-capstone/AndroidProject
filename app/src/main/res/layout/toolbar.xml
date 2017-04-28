@@ -26,7 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 <!--
-    <include layout="@layout/content_view_tagged" />
+    <include layout="@layout/content_tagged_list" />
 
 -->
     <android.support.design.widget.FloatingActionButton
