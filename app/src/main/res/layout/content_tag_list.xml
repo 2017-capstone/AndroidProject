@@ -16,4 +16,11 @@
                 <!--TODO: 리스트뷰로 태그를 표시할 것
                 디자인 가이드 https://material.io/guidelines/components/lists.html#lists-usage -->
         </ListView>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            app:srcCompat="@android:drawable/ic_dialog_email" />
 </android.support.constraint.ConstraintLayout>
