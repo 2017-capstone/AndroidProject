@@ -10,16 +10,21 @@
     tools:showIn="@layout/toolbar"
     tools:layout_editor_absoluteY="0dp"
     tools:layout_editor_absoluteX="0dp">
-        <EditTextView
-            android:inputType="textMultiLine"
-            android:lines="8"
-            android:minLines="6"
-            android:gravity="top|left"
-            android:maxLines="10"
-            android:layout_height="wrap_content"
-            android:layout_width="fill_parent"
-            android:scrollbars="vertical"
-        />
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+                <EditTextView
+                    android:inputType="textMultiLine"
+                    android:lines="8"
+                    android:minLines="6"
+                    android:gravity="top"
+                    android:maxLines="10"
+                    android:layout_height="wrap_content"
+                    android:layout_width="fill_parent"
+                    android:scrollbars="vertical"
+                />
+        </ScrollView>
         <!--TODO: 텍스트 입력 뷰를 만들 것-->
 
 </android.support.constraint.ConstraintLayout>
