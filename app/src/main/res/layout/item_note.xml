@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
@@ -9,23 +9,30 @@
             xmlns:card_view="http://schemas.android.com/apk/res-auto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            card_view:cardCornerradius="10dp"
+            android:id="@+id/noteItem"
+            card_view:cardCornerRadius="10dp"
             card_view:cardElevation="10dp"
-            card_view:cardUsecompatpadding="true">
+            card_view:cardUseCompatPadding="true">
             <!--TODO: 메모 항목을 카드뷰로 정리 할 것
             디자인 가이드 https://material.io/guidelines/components/cards.html 참조 -->
                 <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_height="wrap_content">
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:id="@+id/imagetitle"
-                            android:gravity="center"
+                            android:id="@+id/noteItemTitle"
+                            android:gravity="top|start"
                             android:textAppearance="?android:attr/textAppearanceListItemSmall"
-                            android:minHeight="?android:attr/listPreferredItemHeightSmall">
-                        </TextView>
+                            android:minHeight="?android:attr/listPreferredItemHeightSmall"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/noteItemSummary"
+                            android:gravity="top|start"
+                            android:textAppearance="?android:attr/textAppearanceListItemSmall"
+                            android:minHeight="?android:attr/listPreferredItemHeightSmall"/>
                 </LinearLayout>
         </android.support.v7.widget.CardView>
-</RelativeLayout>
+</LinearLayout>
