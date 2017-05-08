@@ -6,8 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import com.example.penguin.timetagger.NoteItem;
+import com.example.penguin.timetagger.Note;
 import com.example.penguin.timetagger.R;
+
+import java.util.List;
 
 /*
  * Created by penguin on 17. 4. 30.
@@ -15,7 +17,7 @@ import com.example.penguin.timetagger.R;
 
 public class NIAdapter extends RecyclerView.Adapter<NIAdapter.ViewHolder> {
 
-    private NoteItem[] noteItems;
+    private List<Note> noteItems;
     public static class ViewHolder extends RecyclerView.ViewHolder{
         /* TODO: 데이터 베이스 설계에 맞게 수정됨 1 */
         TextView v_title;
@@ -40,21 +42,22 @@ public class NIAdapter extends RecyclerView.Adapter<NIAdapter.ViewHolder> {
         return new ViewHolder(v);
     }
 
-    public NIAdapter(NoteItem[] noteItems){
-        this.noteItems = noteItems.clone();
+    public NIAdapter(View view, List<Note> noteItems){
+        for(int i=0; i<noteItems.size(); i++)
+            this.noteItems.add(noteItems.get(i));
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
         /* TODO: 데이터 베이스에 설계 맞게 수정됨 3 */
-        holder.v_title.setText(noteItems[position].title);
-        holder.v_summary.setText(noteItems[position].body);
+        holder.v_title.setText(noteItems.get(position).title);
+        holder.v_summary.setText(noteItems.get(position).body);
     }
 
     @Override
     public int getItemCount() {
-        return noteItems.length;
+        return noteItems.size();
     }
 }
 
