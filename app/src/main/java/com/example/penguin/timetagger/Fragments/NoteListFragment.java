@@ -6,6 +6,9 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -31,12 +34,15 @@ public class NoteListFragment extends Fragment {
         View view = inflater.inflate(R.layout.content_note_list, container, false);
 
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        // 새로운 노트 작성
         fab.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v){
                         movetoNoteFragment(new Note());
                     }
                 });
+        // 기존 노트 작성
+
 /*
         loadNotes()
 
@@ -48,8 +54,33 @@ public class NoteListFragment extends Fragment {
         rv.setAdapter(nia);
         nia.notifyDataSetChanged();
 */
+        setHasOptionsMenu(true);
         return view;
     }
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.listview_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_save) {
+
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        getActivity().invalidateOptionsMenu();
+    }
+
     private void loadNotes(){
         // TODO: sample을 DB와 연결 할 것
         notes = Arrays.asList(
