@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,17 +11,21 @@
     tools:showIn="@layout/toolbar"
     tools:layout_editor_absoluteY="0dp"
     tools:layout_editor_absoluteX="0dp">
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-                <!--TODO: 설정 창을 설계할 것
-                디자인 가이드 https://material.io/guidelines/patterns/settings.html -->
-        </RelativeLayout>
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:id="@+id/noteItemsRV"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="8dp">
+                <!--TODO: 카드뷰를 연결 할 것
+                디자인 가이드 https://material.io/guidelines/components/cards.html
+                코딩 가이드: http://jizard.tistory.com/23 -->
+        </android.support.v7.widget.RecyclerView>
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
-            app:srcCompat="@android:drawable/ic_input_add" />
-</android.support.constraint.ConstraintLayout>
+            app:srcCompat="@drawable/ic_add" />
+</android.support.design.widget.CoordinatorLayout>
