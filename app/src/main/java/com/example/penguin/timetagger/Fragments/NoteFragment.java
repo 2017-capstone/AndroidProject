@@ -24,7 +24,7 @@ public class NoteFragment extends Fragment {
 
     public static NoteFragment newInstance(Note note){
         Bundle bundle = new Bundle();
-        bundle.putSerializable("NOTE", note);
+        bundle.putParcelable("NOTE", note);
         NoteFragment fragment = new NoteFragment();
         fragment.setArguments(bundle);
         return fragment;
@@ -34,7 +34,10 @@ public class NoteFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.content_note, container, false);
-        //note = (Note)getArguments().getSerializable("NOTE");
+        Bundle bundle = this.getArguments();
+        if(bundle != null) {
+
+        }
         setHasOptionsMenu(true);
         return view;
     }
