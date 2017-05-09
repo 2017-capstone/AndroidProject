@@ -29,20 +29,23 @@ public class Note implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags){
-
+        dest.writeString(title);
+        dest.writeString(body);
+        dest.writeInt(id);
     }
 
     private void readFromParcel(Parcel in){
-
+        title = in.readString();
+        body = in.readString();
+        id = in.readInt();
     }
 
-    public  static final Parcelable.Creator<Note> CREATOR
-            = new Parcelable.Creator<Note>() {
-
+    public  static final Creator<Note> CREATOR = new Creator<Note>() {
+        @Override
         public Note createFromParcel(Parcel in){
             return new Note(in);
         }
-
+        @Override
         public Note[] newArray(int size){
             return new Note[size];
         }

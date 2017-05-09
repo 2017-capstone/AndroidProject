@@ -24,7 +24,7 @@ public class NoteListFragment extends Fragment {
     LinearLayoutManager lm;
     public static NoteListFragment newInstance(Note note){
         Bundle bundle = new Bundle();
-        bundle.putSerializable("NOTE", note);
+        bundle.putParcelable("NOTE", note);
         NoteListFragment fragment = new NoteListFragment();
         fragment.setArguments(bundle);
         return fragment;
@@ -32,7 +32,6 @@ public class NoteListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.content_note_list, container, false);
-
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
         // 새로운 노트 작성
         fab.setOnClickListener(new View.OnClickListener() {

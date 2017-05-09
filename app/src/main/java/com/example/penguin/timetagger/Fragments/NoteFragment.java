@@ -36,7 +36,7 @@ public class NoteFragment extends Fragment {
         View view = inflater.inflate(R.layout.content_note, container, false);
         Bundle bundle = this.getArguments();
         if(bundle != null) {
-
+            note = bundle.getParcelable("NOTE");
         }
         setHasOptionsMenu(true);
         return view;
