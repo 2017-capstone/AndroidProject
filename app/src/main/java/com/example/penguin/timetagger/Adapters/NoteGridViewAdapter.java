@@ -1,12 +1,15 @@
 package com.example.penguin.timetagger.Adapters;
 
 import android.content.Context;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.example.penguin.timetagger.Fragments.NoteFragment;
 import com.example.penguin.timetagger.Note;
 import com.example.penguin.timetagger.R;
 
@@ -49,7 +52,7 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
     }
 
     @Override
-    public void onBindViewHolder(final NoteGridViewHolder holder, int position) {
+    public void onBindViewHolder(final NoteGridViewHolder holder, final int position) {
 
         /* TODO: 데이터 베이스에 설계 맞게 수정됨 3 */
         holder.v_title.setText(noteItems.get(position).title);
@@ -64,7 +67,22 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
             holder.v_summary.setText(bodyString);
         }
 
+        /* 클릭 함수 */
+        holder.cv.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                int p = position;
+                Note note = noteItems.get(position);
+                NoteFragment fragment = NoteFragment.newInstance(note);
 
+                ((FragmentActivity)context).getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.frame_content, fragment)
+                        .addToBackStack(null)
+                        .commit();
+
+            }
+        });
     }
 
     @Override

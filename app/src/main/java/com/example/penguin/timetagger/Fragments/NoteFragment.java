@@ -1,6 +1,7 @@
 package com.example.penguin.timetagger.Fragments;
 
 import android.os.Bundle;
+//import android.app.Fragment;
 import android.support.annotation.*;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -12,9 +13,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.example.penguin.timetagger.Database.*;
-import com.example.penguin.timetagger.DrawerActivity;
 import com.example.penguin.timetagger.Note;
 import com.example.penguin.timetagger.R;
 
@@ -38,6 +39,8 @@ public class NoteFragment extends Fragment {
         if(bundle != null) {
             note = bundle.getParcelable("NOTE");
         }
+        EditText et = (EditText)view.findViewById(R.id.edit_text);
+        et.setText(note.getBody(), TextView.BufferType.EDITABLE);
         setHasOptionsMenu(true);
         return view;
     }
