@@ -14,7 +14,7 @@
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/noteItemsRV"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="wrap_content"/>
         </RelativeLayout>
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"

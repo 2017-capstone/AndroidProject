@@ -16,16 +16,16 @@ import java.util.List;
  * Created by penguin on 17. 4. 30.
  */
 
-public class NIAdapter extends RecyclerView.Adapter<NIAdapter.ViewHolder> {
+public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapter.NoteGridViewHolder> {
     Context context;
     private List<Note> noteItems;
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    public class NoteGridViewHolder extends RecyclerView.ViewHolder{
         /* TODO: 데이터 베이스 설계에 맞게 수정됨 1 */
         TextView v_title;
         TextView v_summary;
         CardView cv;
 
-        public ViewHolder(View v){
+        public NoteGridViewHolder(View v){
             super(v);
             /* TODO: 데이터 베이스 설계에 맞게 수정됨 2 */
             v_title = (TextView) v.findViewById(R.id.noteItemTitle);
@@ -35,25 +35,36 @@ public class NIAdapter extends RecyclerView.Adapter<NIAdapter.ViewHolder> {
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public NoteGridViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // create a new view
         View v = LayoutInflater
                 .from(parent.getContext())
-                .inflate(R.layout.item_note, null);
-        return new ViewHolder(v);
+                .inflate(R.layout.item_note, parent, false);
+        return new NoteGridViewHolder(v);
     }
 
-    public NIAdapter(Context context, List<Note> noteItems){
+    public NoteGridViewAdapter(Context context, List<Note> noteItems){
         this.context = context;
         this.noteItems = noteItems;
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final NoteGridViewHolder holder, int position) {
 
         /* TODO: 데이터 베이스에 설계 맞게 수정됨 3 */
         holder.v_title.setText(noteItems.get(position).title);
-        holder.v_summary.setText(noteItems.get(position).body);
+
+        /* TODO: 최대 표시 문자길이를 옵션으로 추가할 것(현재값: 100) */
+        int MAX_STRING = 100;
+        String bodyString = noteItems.get(position).body;
+        if(bodyString.length() < MAX_STRING)
+            holder.v_summary.setText(noteItems.get(position).body);
+        else{
+            bodyString = bodyString.substring(0, MAX_STRING) + "...";
+            holder.v_summary.setText(bodyString);
+        }
+
+
     }
 
     @Override

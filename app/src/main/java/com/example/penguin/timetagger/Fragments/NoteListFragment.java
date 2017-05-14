@@ -13,7 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.penguin.timetagger.Adapters.NIAdapter;
+import com.example.penguin.timetagger.Adapters.NoteGridViewAdapter;
 import com.example.penguin.timetagger.Note;
 import com.example.penguin.timetagger.R;
 
@@ -57,7 +57,7 @@ public class NoteListFragment extends Fragment {
             rv.setHasFixedSize(true);
             rv.setLayoutManager(sgl);
 
-            NIAdapter nia = new NIAdapter(getActivity(), notes);
+            NoteGridViewAdapter nia = new NoteGridViewAdapter(getActivity(), notes);
             rv.setAdapter(nia);
             nia.notifyDataSetChanged();
         }catch (Exception e){
@@ -93,7 +93,7 @@ public class NoteListFragment extends Fragment {
         // TODO: sample을 DB와 연결 할 것
         notes = Arrays.asList(
                 new Note("First Note", "This is a first note of TimeTagger. You can edit this note by click this card."),
-                new Note("Second Note", "Size of the note is varies according to the amount of the content of note."),
+                new Note("Second Note", "Size of the note is varies according to the amount of the content of note. Max length of string is 100. We will provide a menu to edit the max string length of summary of this card."),
                 new Note("Image Note", "You can also attach an image to the note."),
                 new Note("Record Note", "You can also attach an voice record to the note."),
                 new Note("Drawing Note", "You can also draw an drawing. And attach the drawing to the note."));
