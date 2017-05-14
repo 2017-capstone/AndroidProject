@@ -66,17 +66,12 @@ public class NoteFragment extends Fragment {
         if (id == R.id.action_save) {
             EditText et = (EditText)getActivity().findViewById(R.id.edit_text);
             String body = et.getText().toString();
-
-            /* TODO: Singleton을 Database로 바꾸기  */
-            /*
-            if(this.note.id == -1) {
-            */
-
-            /*
-            }else{
-
+            /* TODO: Note생성시에는 id가 -1인데, 어느새 0이 되어서, 케이스분류에서 벗어남. 이유를 찾을 것 */
+            if(note.getID() == -1){
+                DatabaseHelper.insertNote(note);
             }
-            */
+            else
+                DatabaseHelper.updateNote(note, note.getID());
             return true;
         }
 
