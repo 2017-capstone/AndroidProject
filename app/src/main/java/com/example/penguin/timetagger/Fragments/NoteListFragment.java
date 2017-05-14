@@ -5,6 +5,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.penguin.timetagger.Adapters.NIAdapter;
 import com.example.penguin.timetagger.Note;
 import com.example.penguin.timetagger.R;
 
@@ -29,6 +31,7 @@ public class NoteListFragment extends Fragment {
         fragment.setArguments(bundle);
         return fragment;
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.content_note_list, container, false);
@@ -42,17 +45,23 @@ public class NoteListFragment extends Fragment {
                 });
         // 기존 노트 작성
 
-/*
-        loadNotes()
 
-        lm = new LinearLayoutManager(getActivity());
-        lm.setOrientation(LinearLayoutManager.VERTICAL);
-        rv = (RecyclerView)view.findViewById(R.id.noteItemsRV);
-        rv.setLayoutManager(lm);
-        NIAdapter nia = new NIAdapter(ni);
-        rv.setAdapter(nia);
-        nia.notifyDataSetChanged();
-*/
+        loadNotes();
+        try {
+            //lm = new LinearLayoutManager(getActivity());
+            //lm.setOrientation(LinearLayoutManager.VERTICAL);
+            StaggeredGridLayoutManager sgl =
+                    new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+
+            rv = (RecyclerView) view.findViewById(R.id.noteItemsRV);
+            rv.setHasFixedSize(true);
+            rv.setLayoutManager(sgl);
+
+            NIAdapter nia = new NIAdapter(getActivity(), notes);
+            rv.setAdapter(nia);
+            nia.notifyDataSetChanged();
+        }catch (Exception e){
+        System.out.println(e);}
         setHasOptionsMenu(true);
         return view;
     }
@@ -83,9 +92,11 @@ public class NoteListFragment extends Fragment {
     private void loadNotes(){
         // TODO: sample을 DB와 연결 할 것
         notes = Arrays.asList(
-                new Note("body1", "title1"),
-                new Note("body2", "title2"),
-                new Note("body3", "title3"));
+                new Note("First Note", "This is a first note of TimeTagger. You can edit this note by click this card."),
+                new Note("Second Note", "Size of the note is varies according to the amount of the content of note."),
+                new Note("Image Note", "You can also attach an image to the note."),
+                new Note("Record Note", "You can also attach an voice record to the note."),
+                new Note("Drawing Note", "You can also draw an drawing. And attach the drawing to the note."));
     }
 
     private void movetoNoteFragment(Note note){

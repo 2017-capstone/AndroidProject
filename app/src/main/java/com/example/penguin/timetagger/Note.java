@@ -21,7 +21,11 @@ public class Note implements Parcelable {
     public Note(Parcel in){
         readFromParcel(in);
     }
-
+    public Note(Note n){
+        this.title = n.getTitle();
+        this.body = n.getBody();
+        this.id = -1;
+    }
     @Override
     public int describeContents(){
         return 0;

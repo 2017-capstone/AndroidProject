@@ -1,5 +1,6 @@
 package com.example.penguin.timetagger.Adapters;
 
+import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,7 +17,7 @@ import java.util.List;
  */
 
 public class NIAdapter extends RecyclerView.Adapter<NIAdapter.ViewHolder> {
-
+    Context context;
     private List<Note> noteItems;
     public static class ViewHolder extends RecyclerView.ViewHolder{
         /* TODO: 데이터 베이스 설계에 맞게 수정됨 1 */
@@ -42,13 +43,13 @@ public class NIAdapter extends RecyclerView.Adapter<NIAdapter.ViewHolder> {
         return new ViewHolder(v);
     }
 
-    public NIAdapter(View view, List<Note> noteItems){
-        for(int i=0; i<noteItems.size(); i++)
-            this.noteItems.add(noteItems.get(i));
+    public NIAdapter(Context context, List<Note> noteItems){
+        this.context = context;
+        this.noteItems = noteItems;
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
 
         /* TODO: 데이터 베이스에 설계 맞게 수정됨 3 */
         holder.v_title.setText(noteItems.get(position).title);
