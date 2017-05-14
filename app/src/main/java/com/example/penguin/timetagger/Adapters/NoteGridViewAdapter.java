@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.penguin.timetagger.Database.DatabaseHelper;
 import com.example.penguin.timetagger.Fragments.NoteFragment;
 import com.example.penguin.timetagger.Note;
 import com.example.penguin.timetagger.R;
@@ -48,7 +49,9 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
 
     public NoteGridViewAdapter(Context context, List<Note> noteItems){
         this.context = context;
-        this.noteItems = noteItems;
+        String no_tag = null;
+        this.noteItems = DatabaseHelper.selectNote(no_tag);
+        //this.noteItems = noteItems;
     }
 
     @Override

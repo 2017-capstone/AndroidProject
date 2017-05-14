@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.penguin.timetagger.Note;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,10 +35,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public static synchronized Note insertNote(Note note){
-		String query =  " INSERT INTO " + NOTESTABLE_NAME   +
-						"values(NULL, " + note.getTag()     +","
-										+ note.getTitle()   + ","
-										+ note.getBody()    + ");";
+		String query =  " INSERT INTO "     + NOTESTABLE_NAME   +
+						" values(NULL,'"    + note.getTag()     + "','"
+										    + note.getTitle()   + "','"
+											+ note.getBody()    + "');";
 
 		SQLiteDatabase db = instance.getWritableDatabase();
 		db.execSQL(query);
@@ -50,10 +51,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	public static synchronized void updateNote(Note note, int note_id){
 		if(note_id == -1) return;
-		String query =  " UPDATE "      + NOTESTABLE_NAME   +
-						" SET TAG = "   + note.getTag()     + "," +
-						" SET TITLE = " + note.getTitle()   + "," +
-						" SET BODY = "  + note.getBody()    + ");";;
+		String query =  " UPDATE "          + NOTESTABLE_NAME   +
+						/* null 케이스에 대하여 TAG = 'null'임 */
+						" SET TAG = '"      + note.getTag()     + "'," +
+						" SET TITLE = '"    + note.getTitle()   + "'," +
+						" SET BODY = '"     + note.getBody()    + "');";;
 
 		SQLiteDatabase db = instance.getWritableDatabase();
 		db.execSQL(query);
@@ -61,18 +63,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	public static synchronized List<Note> selectNote(String tag){
 		/* TODO: TAG is null 에 대해 고민 할 것 */
+		String query;
 		if(tag == null)
-			tag = "NULL";
-		String query =  " SELECT FROM "  + NOTESTABLE_NAME   +
-						" WHERE TAG = "  + tag               + ";";
+			query = " SELECT * FROM "   + NOTESTABLE_NAME   +
+					" WHERE TAG = 'null';";
+		else
+			query = " SELECT * FROM "   + NOTESTABLE_NAME   +
+					" WHERE TAG = '"    + tag               + "';";
 		SQLiteDatabase db = instance.getReadableDatabase();
 		Cursor cursor = db.rawQuery(query, null);
 
 		List<Note> notes = new LinkedList<>();
 		if(cursor.moveToFirst()){
-			Note note = new Note(cursor.getString(1),cursor.getString(2),
-								 cursor.getString(3), cursor.getInt(0));
-			notes.add(note);
+			while(!cursor.isAfterLast()) {
+				Note note = new Note(cursor.getString(1), cursor.getString(2),
+						cursor.getString(3), cursor.getInt(0));
+				notes.add(note);
+				cursor.moveToNext();
+			}
 		}
 		cursor.close();
 		return notes;
@@ -80,7 +88,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	public static synchronized Note selectNote(int note_id){
 		/* TODO: TAG is null 에 대해 고민 할 것 */
-		String query =  " SELECT FROM "     + NOTESTABLE_NAME   +
+		String query =  " SELECT * FROM "   + NOTESTABLE_NAME   +
 						" WHERE NOTE_ID = " + note_id           + ";";
 		SQLiteDatabase db = instance.getReadableDatabase();
 		Cursor cursor = db.rawQuery(query, null);
@@ -118,9 +126,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.execSQL(CREATE_TIMETABLES);
 		db.execSQL(CREATE_TAGS);
 		db.execSQL(CREATE_NOTES);
+
+		loadNotes();
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
 
+
+
+	private static void loadNotes(){
+		// TODO: sample을 DB와 연결 할 것
+		List<Note> notes = Arrays.asList(
+				new Note("First Note", "This is a first note of TimeTagger. You can edit this note by click this card."),
+				new Note("Second Note", "Size of the note is varies according to the amount of the content of note. Max length of string is 100. We will provide a menu to edit the max string length of summary of this card."),
+				new Note("Image Note", "You can also attach an image to the note."),
+				new Note("Record Note", "You can also attach an voice record to the note."),
+				new Note("Drawing Note", "You can also draw an drawing. And attach the drawing to the note."));
+
+		for(int i=0; i<notes.size(); i++){
+			Note n = new Note(notes.get(i).getTitle(), notes.get(i).getBody());
+			DatabaseHelper.insertNote(n);
+		}
+	}
 }
