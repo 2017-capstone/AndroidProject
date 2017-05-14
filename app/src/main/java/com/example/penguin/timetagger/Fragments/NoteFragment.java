@@ -71,10 +71,10 @@ public class NoteFragment extends Fragment {
             /*
             if(this.note.id == -1) {
             */
-            DataManager.getInstance().insertNote(new Note("", body));
+
             /*
             }else{
-                DataManager.getInstance().saveNote(this.note.id, new Note("", body));
+
             }
             */
             return true;
