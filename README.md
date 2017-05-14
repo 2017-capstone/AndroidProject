@@ -24,7 +24,7 @@ Works
 -----
 
 > - 할 일 목록을 [프로젝트](https://github.com/2017-capstone/AndroidProject/projects/1/edit)에서 공유할 것
-> - **브랜치나, 머지 기능을 사용 전 반드시 단톡에서 허락 받을 것**
+> - **머지 기능을 사용 전 반드시 단톡에서 허락 받을 것**
 
 Errors
 ------
@@ -35,4 +35,4 @@ Push
 ----
 
 > - 푸시 전에 항상 풀을 할 것.
-> - 푸시 후, [풀 요청](https://github.com/2017-capstone/AndroidProject/pulls)을 남길 것
+> - 특정 기능에 관한 작업을 시작할 때 브랜치를 개설하고 브랜치별로 [풀 요청](https://github.com/2017-capstone/AndroidProject/pulls)을 남길 것
