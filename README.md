@@ -36,3 +36,20 @@ Push
 
 > - 푸시 전에 항상 풀을 할 것.
 > - 특정 기능에 관한 작업을 시작할 때 브랜치를 개설하고 브랜치별로 [풀 요청](https://github.com/2017-capstone/AndroidProject/pulls)을 남길 것
+
+호옥시나 해서 ... 작성해두는 브랜치+ 작성법
+> - 예제: 탭에 메뉴를 다는 작업을 할거임 
+> - "ADD_MENU" 작업임
+> - Version Control에서 Log탭으로 간후,
+> - 현재 origin/master라고 쓰인 부분에 마우스 오른쪽 클릭
+> - New Branch 누르고, ADD_MENU
+> - 다시 같은 곳을 마우스오른클릭 후, Branch 'ADD_MENU'가 있으면 클릭 후, Chekout 클릭
+> - (1) 이후. 코딩작업
+> - (2) 기능 단위로 작업완료시 Version Control에서 local changes 탭에서 Default클릭후, VCS(윗쪽화살표)클릭
+> - 이후, (1)코딩작업...(2)(1)(2)... 반복
+> - 이후, ADD_MENU작업이 끝났을때, (2)의 작업
+> - 이후, Terminal선택
+> - git checkout master (origin/master는 건들지 말것)
+> - git merge ADD_MENU
+> - 이후, git push 할것
+
