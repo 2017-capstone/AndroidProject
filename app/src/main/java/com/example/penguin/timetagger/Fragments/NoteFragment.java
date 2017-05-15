@@ -67,7 +67,7 @@ public class NoteFragment extends Fragment {
             EditText et = (EditText)getActivity().findViewById(R.id.edit_text);
             String body = et.getText().toString();
             /* TODO: Note생성시에는 id가 -1인데, 어느새 0이 되어서, 케이스분류에서 벗어남. 이유를 찾을 것 */
-            if(note.getID() == -1){
+            if(note.getID() == -1 || note.getID() == 0){
                 DatabaseHelper.insertNote(note);
             }
             else
