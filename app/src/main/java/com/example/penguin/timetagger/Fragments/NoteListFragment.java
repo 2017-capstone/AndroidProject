@@ -18,7 +18,6 @@ import com.example.penguin.timetagger.Database.DatabaseHelper;
 import com.example.penguin.timetagger.Note;
 import com.example.penguin.timetagger.R;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class NoteListFragment extends Fragment {
@@ -47,6 +46,8 @@ public class NoteListFragment extends Fragment {
         // 기존 노트 작성
 
         DatabaseHelper.getInstance(getActivity());
+        // TODO: 1회 실행후, 다음 줄은 주석 처리 할 것.
+        DatabaseHelper.loadDummyNotes();
         try {
             //lm = new LinearLayoutManager(getActivity());
             //lm.setOrientation(LinearLayoutManager.VERTICAL);
