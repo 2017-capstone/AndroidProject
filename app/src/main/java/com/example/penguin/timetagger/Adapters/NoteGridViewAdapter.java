@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.penguin.timetagger.Database.DatabaseHelper;
 import com.example.penguin.timetagger.Fragments.NoteFragment;
 import com.example.penguin.timetagger.Note;
 import com.example.penguin.timetagger.R;
@@ -48,20 +49,22 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
 
     public NoteGridViewAdapter(Context context, List<Note> noteItems){
         this.context = context;
-        this.noteItems = noteItems;
+        String no_tag = null;
+        this.noteItems = DatabaseHelper.selectNote(no_tag);
+        //this.noteItems = noteItems;
     }
 
     @Override
     public void onBindViewHolder(final NoteGridViewHolder holder, final int position) {
 
         /* TODO: 데이터 베이스에 설계 맞게 수정됨 3 */
-        holder.v_title.setText(noteItems.get(position).title);
+        holder.v_title.setText(noteItems.get(position).getTitle());
 
         /* TODO: 최대 표시 문자길이를 옵션으로 추가할 것(현재값: 100) */
         int MAX_STRING = 100;
-        String bodyString = noteItems.get(position).body;
+        String bodyString = noteItems.get(position).getBody();
         if(bodyString.length() < MAX_STRING)
-            holder.v_summary.setText(noteItems.get(position).body);
+            holder.v_summary.setText(noteItems.get(position).getBody());
         else{
             bodyString = bodyString.substring(0, MAX_STRING) + "...";
             holder.v_summary.setText(bodyString);
