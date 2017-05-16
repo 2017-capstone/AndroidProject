@@ -37,7 +37,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	public static synchronized Note insertNote(Note note){
 		String query =  " INSERT INTO "     + NOTESTABLE_NAME   +
-						" values(NULL,'"    + note.getTag()     + "','"
+						" values(NULL,'"    + note.getTagID()     + "','"
 										    + note.getTitle()   + "','"
 											+ note.getBody()    + "');";
 
@@ -45,18 +45,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.execSQL(query);
 
 		Cursor cursor = db.rawQuery("SELECT last_insert_rowid()", null);
-		note.setID(cursor.getColumnIndex("NOTE_ID"));
+		note.setNoteID(cursor.getColumnIndex("NOTE_ID"));
 		cursor.close();
 		return note;
 	}
 
-	public static synchronized void updateNote(Note note, int note_id){
-		if(note_id == -1) return;
+	public static synchronized void updateNote(Note note){
+		if(note.getNoteID() == -1) return;
 		String query =  " UPDATE "          + NOTESTABLE_NAME   +
-						/* null 케이스에 대하여 TAG = 'null'임 */
-						" SET TAG = '"      + note.getTag()     + "'," +
-						" SET TITLE = '"    + note.getTitle()   + "'," +
-						" SET BODY = '"     + note.getBody()    + "');";;
+						" SET TAG_ID = "    + note.getTagID()   + "," +
+						" TITLE = '"        + note.getTitle()   + "'," +
+						" BODY = '"         + note.getBody()    + "'" +
+						" WHERE NOTE_ID = " + note.getNoteID()  + ";";
 
 		SQLiteDatabase db = instance.getWritableDatabase();
 		db.execSQL(query);
@@ -66,7 +66,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		/* TODO: TAG is null 에 대해 고민 할 것 */
 		String query;
 		query = " SELECT * FROM "   + NOTESTABLE_NAME   +
-				" WHERE TAG_ID = "    + tag_id               + ";";
+				" WHERE TAG_ID = "  + tag_id            + ";";
 
 		SQLiteDatabase db = instance.getReadableDatabase();
 		Cursor cursor = db.rawQuery(query, null);
@@ -74,8 +74,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		List<Note> notes = new LinkedList<>();
 		if(cursor.moveToFirst()){
 			while(!cursor.isAfterLast()) {
-				Note note = new Note(cursor.getInt(1), cursor.getString(2),
-						cursor.getString(3), cursor.getInt(0));
+				Note note = new Note(cursor.getInt(0), cursor.getInt(1),
+									 cursor.getString(2), cursor.getString(3));
 				notes.add(note);
 				cursor.moveToNext();
 			}
@@ -92,8 +92,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Cursor cursor = db.rawQuery(query, null);
 
 		if(cursor.moveToFirst()){
-			Note note = new Note(cursor.getInt(1),cursor.getString(2),
-					cursor.getString(3), cursor.getInt(0));
+			Note note = new Note(cursor.getInt(0), cursor.getInt(1),
+								 cursor.getString(2), cursor.getString(3));
 			return note;
 		}
 		cursor.close();
@@ -110,8 +110,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db = instance.getWritableDatabase();
 		db.execSQL(query);
 
+		// TODO: insert tag에서는 tag 에 연동된 타임 테이블도 추가해줘야 함
 		return;
 	}
+
+	// TODO: selectTags는 tag안에 연동된 타임테이블을 포함해서 리턴해 주어야 함.
 
 	public void InitializeDB(SQLiteDatabase db) {
 		String query = "INSERT INTO " + TAGSTABLE_NAME +
@@ -156,20 +159,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			return;
 		// TODO: sample을 DB와 연결 할 것
 		List<Note> notes = Arrays.asList(
-				new Note("Dummy Note", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "));
+				new Note("Dummy Note1", "This is Dummy. This is Dummy. "),
+				new Note("Dummy Note2", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
+				new Note("Dummy Note3", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
+				new Note("Dummy Note4", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
+				new Note("Dummy Note5", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
+				new Note("Dummy Note6", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
+				new Note("Dummy Note7", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
+				new Note("Dummy Note8", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
+				new Note("Dummy Note9", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
+				new Note("Dummy Note10", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
+				new Note("Dummy Note11", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
+				new Note("Dummy Note12", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
+				new Note("Dummy Note13", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
+				new Note("Dummy Note14", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "));
 
 		for(int i=0; i<notes.size(); i++){
 			Note n = new Note(notes.get(i).getTitle(), notes.get(i).getBody());
