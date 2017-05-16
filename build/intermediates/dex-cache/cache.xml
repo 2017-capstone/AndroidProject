@@ -7,17 +7,8 @@
         jumboMode="true"
         optimize="true"
         revision="25.0.2"
-        sha1="e3f22202a13322d1458fe06a8e94b593126138dc">
+        sha1="17163c21938f05cea51a5653f49025b016266b5e">
         <dex dex="/home/penguin/AndroidStudioProjects/TimeTagger/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_91544f5948c324ea3fcb0456427c2f9f0bf435a6/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/home/penguin/AndroidStudioProjects/TimeTagger/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.2"
-        sha1="c82741bc129dd5f99f11a4ab8666ae24262053b6">
-        <dex dex="/home/penguin/AndroidStudioProjects/TimeTagger/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run_057f7953bc7ff4853ec681c1eee9f1855ef4cc75/classes.dex" />
     </item>
     <item
         is-multidex="true"
@@ -27,6 +18,15 @@
         revision="25.0.2"
         sha1="914f5d3e3ace66080e59613708f06d129a222e25">
         <dex dex="/home/penguin/AndroidStudioProjects/TimeTagger/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_dda7ae9dbd4f0cd1b2be99b8d92ea8760fc69784/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/penguin/AndroidStudioProjects/TimeTagger/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="c82741bc129dd5f99f11a4ab8666ae24262053b6">
+        <dex dex="/home/penguin/AndroidStudioProjects/TimeTagger/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run_057f7953bc7ff4853ec681c1eee9f1855ef4cc75/classes.dex" />
     </item>
 
 </items>

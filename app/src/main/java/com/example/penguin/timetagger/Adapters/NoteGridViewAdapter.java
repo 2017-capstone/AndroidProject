@@ -47,10 +47,9 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
         return new NoteGridViewHolder(v);
     }
 
-    public NoteGridViewAdapter(Context context, List<Note> noteItems){
+    public NoteGridViewAdapter(Context context, int tag_id){
         this.context = context;
-        int no_tag = 0;
-        this.noteItems = DatabaseHelper.selectNotes(no_tag);
+        this.noteItems = DatabaseHelper.selectNotes(tag_id);
         //this.noteItems = noteItems;
     }
 
