@@ -12,6 +12,7 @@ import android.view.MenuItem;
 
 import com.example.penguin.timetagger.Fragments.SettingsFragment;
 import com.example.penguin.timetagger.Fragments.NoteListFragment;
+import com.example.penguin.timetagger.Fragments.TagListFragment;
 
 public class DrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -34,7 +35,7 @@ public class DrawerActivity extends AppCompatActivity
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction
-                .replace(R.id.frame_content, new NoteListFragment())
+                .replace(R.id.frame_content, new TagListFragment())
                 .addToBackStack(null)
                 .commit();
     }
@@ -78,7 +79,12 @@ public class DrawerActivity extends AppCompatActivity
                     .replace(R.id.frame_content, new NoteListFragment())
                     .addToBackStack(null)
                     .commit();
-        } else if (id == R.id.nav_settings) {
+        } else if (id == R.id.nav_tagsettings) {
+            transaction
+                    .replace(R.id.frame_content, new TagListFragment())
+                    .addToBackStack(null)
+                    .commit();
+        }else if (id == R.id.nav_settings) {
             transaction
                     .replace(R.id.frame_content, new SettingsFragment())
                     .addToBackStack(null)
