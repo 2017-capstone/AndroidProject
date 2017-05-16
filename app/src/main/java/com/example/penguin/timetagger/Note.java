@@ -9,15 +9,15 @@ import android.os.Parcelable;
 
 public class Note implements Parcelable {
     /* TODO: 데이터 베이스에 설계에 맞게 클래스를 생성할 것 */
-    private String tag;
+    private int tag;
     private String title;
     private String body;
     private int id;
 
     public Note(){}
-    public Note(String t, String b){title = t; body = b; id=-1;}
-    public Note(String _t, String t, String b, int i){tag=_t; title = t; body = b; id = i;}
-    public String getTag(){return tag;}
+    public Note(String t, String b){tag = 0; title = t; body = b; id=-1;}
+    public Note(int _t, String t, String b, int i){tag=_t; title = t; body = b; id = i;}
+    public int getTag(){return tag;}
     public String getTitle(){return title;}
     public String getBody(){return body;}
     public int getID(){return id;}
@@ -38,14 +38,14 @@ public class Note implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags){
-        dest.writeString(tag);
+        dest.writeInt(tag);
         dest.writeString(title);
         dest.writeString(body);
         dest.writeInt(id);
     }
 
     private void readFromParcel(Parcel in){
-        tag = in.readString();
+        tag = in.readInt();
         title = in.readString();
         body = in.readString();
         id = in.readInt();
