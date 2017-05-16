@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.penguin.timetagger.Note;
+import com.example.penguin.timetagger.TimeTag;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -61,22 +62,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.execSQL(query);
 	}
 
-	public static synchronized List<Note> selectNote(String tag){
+	public static synchronized List<Note> selectNotes(int tag_id){
 		/* TODO: TAG is null 에 대해 고민 할 것 */
 		String query;
-		if(tag == null)
-			query = " SELECT * FROM "   + NOTESTABLE_NAME   +
-					" WHERE TAG = 'null';";
-		else
-			query = " SELECT * FROM "   + NOTESTABLE_NAME   +
-					" WHERE TAG = '"    + tag               + "';";
+		query = " SELECT * FROM "   + NOTESTABLE_NAME   +
+				" WHERE TAG_ID = "    + tag_id               + ";";
+
 		SQLiteDatabase db = instance.getReadableDatabase();
 		Cursor cursor = db.rawQuery(query, null);
 
 		List<Note> notes = new LinkedList<>();
 		if(cursor.moveToFirst()){
 			while(!cursor.isAfterLast()) {
-				Note note = new Note(cursor.getString(1), cursor.getString(2),
+				Note note = new Note(cursor.getInt(1), cursor.getString(2),
 						cursor.getString(3), cursor.getInt(0));
 				notes.add(note);
 				cursor.moveToNext();
@@ -94,7 +92,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Cursor cursor = db.rawQuery(query, null);
 
 		if(cursor.moveToFirst()){
-			Note note = new Note(cursor.getString(1),cursor.getString(2),
+			Note note = new Note(cursor.getInt(1),cursor.getString(2),
 					cursor.getString(3), cursor.getInt(0));
 			return note;
 		}
@@ -102,30 +100,50 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return null;
 	}
 
+	public static synchronized void insertTags(TimeTag newtag){
+		String query =  " INSERT INTO "     + TAGSTABLE_NAME   +
+						" values('"    		+ newtag.getID()     + "','"
+											+ newtag.getTag()   + "',"
+											+ newtag.getStart()   + ","
+											+ newtag.getEnd()    + ");";
+
+		SQLiteDatabase db = instance.getWritableDatabase();
+		db.execSQL(query);
+
+		return;
+	}
+
+	public void InitializeDB(SQLiteDatabase db) {
+		String query = "INSERT INTO " + TAGSTABLE_NAME +
+				" values(0, 'No Tag', null, null);";
+		db.execSQL(query);
+	}
+
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		String CREATE_TIMETABLES = "CREATE TABLE times(" +
-						"TIME_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-						"TAG_ID INTEGER NOT NULL, " +
-						"START TIMESTAMP, " +
-						"END TIMESTAMP);";
 		String CREATE_TAGS = "CREATE TABLE tags(" +
 						"TAG_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
 						"TAG TEXT NOT NULL, " +
 						"LOOP_START TIMESTAMP, " +
-						"LOOP_END TIMESTAMP, " +
-						"FOREIGN KEY(TAG_ID) REFERENCES times(TAG_ID) ); ";
+						"LOOP_END TIMESTAMP);";
+		String CREATE_TIMETABLES = "CREATE TABLE times(" +
+						"TIME_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+						"TAG_ID INTEGER NOT NULL, " +
+						"START TIMESTAMP, " +
+						"END TIMESTAMP, " +
+						"FOREIGN KEY(TAG_ID) REFERENCES tags(TAG_ID) ); ";
 		String CREATE_NOTES = "CREATE TABLE notes(" +
 						"NOTE_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-						"TAG TEXT, " +
+						"TAG_ID INTEGER, " +
 						"TITLE TEXT, " +
 						"BODY TEXT, " +
-						"FOREIGN KEY(TAG) REFERENCES tags(TAG) ); ";
+						"FOREIGN KEY(TAG_ID) REFERENCES tags(TAG_ID) ); ";
 		/* TODO: 사진, 음성, 그림 등을 담을 수 있는 데이터베이스를 생성할 것 */
 		// String CREATE_ATTACHMENTS = ...
 		db.execSQL(CREATE_TIMETABLES);
 		db.execSQL(CREATE_TAGS);
 		db.execSQL(CREATE_NOTES);
+		InitializeDB(db);
 	}
 
 	@Override
