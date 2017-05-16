@@ -9,6 +9,7 @@ import android.os.Parcelable;
 
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.List;
 
 public class TimeTag implements Parcelable {
 	/* TODO: 데이터 베이스에 설계에 맞게 클래스를 생성할 것 */
@@ -16,10 +17,12 @@ public class TimeTag implements Parcelable {
 	private String tag;
 	private Timestamp start;
 	private Timestamp end;
+	private List<TimeTable> times;
 
 	public TimeTag(){}
 	public TimeTag(String t){tag = t;}
 	public TimeTag(String t, Timestamp t1, Timestamp t2){tag = t; start = t1; end = t2;}
+	public TimeTag(String t, Timestamp t1, Timestamp t2, List<TimeTable> tt){tag=t;start=t1;end=t2;times=tt;}
 
 	public int getID(){return tag_id;}
 	public String getTag(){return tag;}
