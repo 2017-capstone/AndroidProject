@@ -17,16 +17,19 @@ import com.example.penguin.timetagger.Adapters.NoteGridViewAdapter;
 import com.example.penguin.timetagger.Database.DatabaseHelper;
 import com.example.penguin.timetagger.Note;
 import com.example.penguin.timetagger.R;
+import com.example.penguin.timetagger.TimeTag;
 
 import java.util.List;
 
 public class NoteListFragment extends Fragment {
+    private TimeTag timeTag;
+    private int tag_id = 0;
     private List<Note> notes;
     RecyclerView rv;
     LinearLayoutManager lm;
-    public static NoteListFragment newInstance(Note note){
+    public static NoteListFragment newInstance(TimeTag timeTag){
         Bundle bundle = new Bundle();
-        bundle.putParcelable("NOTE", note);
+        bundle.putParcelable("TIMETAG", timeTag);
         NoteListFragment fragment = new NoteListFragment();
         fragment.setArguments(bundle);
         return fragment;
@@ -44,13 +47,15 @@ public class NoteListFragment extends Fragment {
                     }
                 });
         // 기존 노트 작성
-
+        Bundle bundle = this.getArguments();
+        if(bundle != null){
+            timeTag = bundle.getParcelable("TIMETAG");
+            tag_id = timeTag.getID();
+        }
         DatabaseHelper.getInstance(getActivity());
         // TODO: 1회 실행후, 다음 줄은 주석 처리 할 것.
         //DatabaseHelper.loadDummyNotes();
         try {
-            //lm = new LinearLayoutManager(getActivity());
-            //lm.setOrientation(LinearLayoutManager.VERTICAL);
             StaggeredGridLayoutManager sgl =
                     new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
 
@@ -58,7 +63,7 @@ public class NoteListFragment extends Fragment {
             rv.setHasFixedSize(true);
             rv.setLayoutManager(sgl);
 
-            NoteGridViewAdapter nia = new NoteGridViewAdapter(getActivity(), notes);
+            NoteGridViewAdapter nia = new NoteGridViewAdapter(getActivity(), tag_id);
             rv.setAdapter(nia);
             nia.notifyDataSetChanged();
         }catch (Exception e){
@@ -98,6 +103,5 @@ public class NoteListFragment extends Fragment {
                 .replace(R.id.frame_content, fragment)
                 .addToBackStack(null)
                 .commit();
-
     }
 }

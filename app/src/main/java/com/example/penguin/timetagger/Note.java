@@ -9,27 +9,31 @@ import android.os.Parcelable;
 
 public class Note implements Parcelable {
     /* TODO: 데이터 베이스에 설계에 맞게 클래스를 생성할 것 */
-    private String tag;
+    private int note_id;
+    private int tag_id;
     private String title;
     private String body;
-    private int id;
 
     public Note(){}
-    public Note(String t, String b){title = t; body = b; id=-1;}
-    public Note(String _t, String t, String b, int i){tag=_t; title = t; body = b; id = i;}
-    public String getTag(){return tag;}
+    public Note(String t, String b){note_id = -1; tag_id = 0; title = t; body = b;}
+    public Note(int ni, int ti, String t, String b){note_id=ni; tag_id=ti; title = t; body = b;}
+    public int getNoteID(){return note_id;}
+    public int getTagID(){return tag_id;}
     public String getTitle(){return title;}
     public String getBody(){return body;}
-    public int getID(){return id;}
-    public void setID(int id){this.id = id;}
+
+    public void setNoteID(int id){note_id = id;}
+    public void setTagID(int id){tag_id = id;}
+    public void setTitle(String t){title=t;}
+    public void setBody(String b){body=b;}
 
     public Note(Parcel in){
         readFromParcel(in);
     }
     public Note(Note n){
-        this.title = n.getTitle();
-        this.body = n.getBody();
-        this.id = -1;
+        note_id = -1;
+        title = n.getTitle();
+        body = n.getBody();
     }
     @Override
     public int describeContents(){
@@ -38,17 +42,17 @@ public class Note implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags){
-        dest.writeString(tag);
+        dest.writeInt(note_id);
+        dest.writeInt(tag_id);
         dest.writeString(title);
         dest.writeString(body);
-        dest.writeInt(id);
     }
 
     private void readFromParcel(Parcel in){
-        tag = in.readString();
+        note_id = in.readInt();
+        tag_id = in.readInt();
         title = in.readString();
         body = in.readString();
-        id = in.readInt();
     }
 
     public  static final Creator<Note> CREATOR = new Creator<Note>() {
