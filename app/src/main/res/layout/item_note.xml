@@ -20,7 +20,7 @@
                     android:orientation="vertical"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp">
-                        <TextView
+                    <TextView
                             android:id="@+id/noteItemTitle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -29,6 +29,15 @@
                             android:textSize="24sp"
                             android:textColor="#000000"
                             android:hint="title here"/>
+                        <CheckBox
+                            android:id="@+id/noteCheckBox"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:clickable="false"
+                            android:visibility="gone"
+                            android:layout_alignBaseline="@+id/noteItemTitle"
+                            android:layout_alignBottom="@+id/noteItemTitle"
+                            android:layout_alignParentEnd="true"/>
                         <ImageView
                             android:id="@+id/noteItemImage"
                             android:layout_width="match_parent"
