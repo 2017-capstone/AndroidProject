@@ -7,10 +7,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.penguin.timetagger.Note;
 import com.example.penguin.timetagger.TimeTag;
+//import com.example.penguin.timetagger.TimeTable;
 
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.jar.Pack200;
 
 /**
  * Created by penguin on 17. 5. 15.
@@ -100,21 +103,65 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return null;
 	}
 
-	public static synchronized void insertTags(TimeTag newtag){
-		String query =  " INSERT INTO "     + TAGSTABLE_NAME   +
+	public static synchronized void insertTag(TimeTag newtag){
+		String query =  " INSERT INTO "     + TAGSTABLE_NAME     +
 						" values('"    		+ newtag.getID()     + "','"
-											+ newtag.getTag()   + "',"
-											+ newtag.getStart()   + ","
-											+ newtag.getEnd()    + ");";
+											+ newtag.getTag()    + "',"
+											+ newtag.getStart()  + ","
+                                            + newtag.getEnd()    + ");";
 
 		SQLiteDatabase db = instance.getWritableDatabase();
 		db.execSQL(query);
 
 		// TODO: insert tag에서는 tag 에 연동된 타임 테이블도 추가해줘야 함
-		return;
+
+        for (int i = 0; i < newtag.getListSize(); i++) {
+            query = " INSERT INTO " + TIMETABLES_NAME +
+                    " values('" + newtag.getListItemTimeID(i) + "','"
+                                + newtag.getListItemTagID(i)  + "',"
+                                + newtag.getListItemStart(i)  + ","
+                                + newtag.getListItemEnd(i)    + ");";
+            db.execSQL(query);
+        }
+
+        return;
 	}
 
-	// TODO: selectTags는 tag안에 연동된 타임테이블을 포함해서 리턴해 주어야 함.
+	public static synchronized TimeTag selectTag(int tag_id){
+        String query;
+		query = " SELECT * FROM "   + TAGSTABLE_NAME   +
+				" WHERE TAG_ID = "  + tag_id            + ";";
+
+		SQLiteDatabase db = instance.getReadableDatabase();
+		Cursor cursor = db.rawQuery(query, null);
+
+		if(cursor.moveToFirst()) {
+            Timestamp start = new Timestamp(cursor.getLong(1));
+            Timestamp end = new Timestamp(cursor.getLong(2));
+            TimeTag tag = new TimeTag(cursor.getString(0), start, end);
+
+            String query2 = " SELECT * FROM "   + TIMETABLES_NAME   +
+                    " WHERE TAG_ID = "  + tag_id            + ";";
+            Cursor cursor2 = db.rawQuery(query2, null);
+
+            if(cursor2.moveToFirst()){
+                while(!cursor2.isAfterLast()) {
+                    start = new Timestamp(cursor2.getLong(2));
+                    end = new Timestamp(cursor2.getLong(3));
+                    tag.setTimes(cursor2.getInt(0), cursor2.getInt(1), start, end);
+                    cursor2.moveToNext();
+                }
+            }
+            cursor2.close();
+
+            return tag;
+        }
+
+		cursor.close();
+		// TODO: selectTags는 tag안에 연동된 타임테이블을 포함해서 리턴해 주어야 함.
+
+        return null;
+	}
 
 	public void InitializeDB(SQLiteDatabase db) {
 		String query = "INSERT INTO " + TAGSTABLE_NAME +

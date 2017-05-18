@@ -32,6 +32,12 @@ public class TimeTag implements Parcelable {
 	public void setTag(String t){tag = t;}
 	public void setStart(Timestamp t){start = t;}
 	public void setEnd(Timestamp t){end = t;}
+    public void setTimes(int Time_id, int Tag_id, Timestamp s, Timestamp e){times.set(times.size(), new TimeTable(Time_id, Tag_id, s, e));}
+    public int getListSize(){return times.size();}
+    public int getListItemTimeID(int index){return times.get(index).getTimeID();}
+    public int getListItemTagID(int index){return times.get(index).getTagID();}
+    public Timestamp getListItemStart(int index){return times.get(index).getStart();}
+    public Timestamp getListItemEnd(int index){return times.get(index).getEnd();}
 
 	public TimeTag(Parcel in){readFromParcel(in);}
 	public TimeTag(TimeTag t){
