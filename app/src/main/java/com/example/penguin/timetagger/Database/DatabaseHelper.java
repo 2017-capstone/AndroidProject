@@ -12,6 +12,7 @@ import com.example.penguin.timetagger.TimeTag;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -40,7 +41,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			instance = new DatabaseHelper(context);
 		return instance;
 	}
-
+	/* NOTES */
 	public static synchronized Note insertNote(Note note){
 		String query =  " INSERT INTO "     + NOTESTABLE_NAME   +
 						" values(NULL,'"    + note.getTagID()     + "','"
@@ -68,8 +69,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.execSQL(query);
 	}
 
+	public static synchronized List<Note> selectAllNotes(){
+		String query;
+		query = " SELECT * FROM "   + NOTESTABLE_NAME   + ";";
+
+		SQLiteDatabase db = instance.getReadableDatabase();
+		Cursor cursor = db.rawQuery(query, null);
+
+		List<Note> notes = new LinkedList<>();
+		if(cursor.moveToFirst()){
+			while(!cursor.isAfterLast()) {
+				Note note = new Note(cursor.getInt(0), cursor.getInt(1),
+						cursor.getString(2), cursor.getString(3));
+				notes.add(note);
+				cursor.moveToNext();
+			}
+		}
+		cursor.close();
+		return notes;
+	}
 	public static synchronized List<Note> selectNotes(int tag_id){
-		/* TODO: TAG is null 에 대해 고민 할 것 */
 		String query;
 		query = " SELECT * FROM "   + NOTESTABLE_NAME   +
 				" WHERE TAG_ID = "  + tag_id            + ";";
@@ -89,7 +108,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		cursor.close();
 		return notes;
 	}
-
 	public static synchronized Note selectNote(int note_id){
 		/* TODO: TAG is null 에 대해 고민 할 것 */
 		String query =  " SELECT * FROM "   + NOTESTABLE_NAME   +
@@ -106,6 +124,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return null;
 	}
 
+	/* TAGS */
 	public static synchronized void insertTag(TimeTag tag){
 		String query =  " INSERT INTO "     + TAGSTABLE_NAME            +
 						" values("    		+ null                      + ",'"
@@ -132,40 +151,67 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return;
 	}
 
-	public static synchronized TimeTag selectTag(int tag_id){
-        String query;
-		query = " SELECT * FROM "   + TAGSTABLE_NAME   +
-				" WHERE TAG_ID = "  + tag_id            + ";";
+	public static synchronized List<TimeTag> selectAllTags(){
+		String query;
+		query = " SELECT * FROM "   + TAGSTABLE_NAME    +
+				" LEFT OUTER JOIN " + TIMETABLES_NAME   +
+				" on "              + TAGSTABLE_NAME    + ".TAG_ID" +
+				"="                 + TIMETABLES_NAME   + ".TAG_ID" +
+				" GROUP BY "        + TAGSTABLE_NAME    + ".TAG_ID;";
 
 		SQLiteDatabase db = instance.getReadableDatabase();
 		Cursor cursor = db.rawQuery(query, null);
 
+		List<TimeTag> timeTags = new LinkedList<>();
+		List<TimeTable> timeTables;
+		int tmp_id;
 		if(cursor.moveToFirst()) {
-            Timestamp start = new Timestamp(cursor.getLong(1));
-            Timestamp end = new Timestamp(cursor.getLong(2));
-            TimeTag tag = new TimeTag(cursor.getString(0), start, end);
+			for (int i = 0; !cursor.isAfterLast(); i++) {
+				timeTags.add(new TimeTag(cursor.getInt(0), cursor.getString(1), cursor.getLong(2), cursor.getLong(3)));
+				timeTables = new LinkedList<>();
+				tmp_id = cursor.getInt(0);
 
-            String query2 = " SELECT * FROM "   + TIMETABLES_NAME   +
-                    " WHERE TAG_ID = "  + tag_id            + ";";
-            Cursor cursor2 = db.rawQuery(query2, null);
-
-            if(cursor2.moveToFirst()){
-                while(!cursor2.isAfterLast()) {
-                    start = new Timestamp(cursor2.getLong(2));
-                    end = new Timestamp(cursor2.getLong(3));
-                    tag.setTimes(cursor2.getInt(0), cursor2.getInt(1), start, end);
-                    cursor2.moveToNext();
-                }
-            }
-            cursor2.close();
-
-            return tag;
-        }
-
+				while (!cursor.isAfterLast()) {
+					if (tmp_id != cursor.getInt(0)) {
+						timeTags.get(i).setTimes(timeTables);
+						break;
+					}
+					if (cursor.getInt(4) != 0)
+						timeTables.add(new TimeTable(cursor.getInt(4), cursor.getInt(5), cursor.getLong(6), cursor.getLong(7)));
+					cursor.moveToNext();
+				}
+			}
+		}
 		cursor.close();
-		// TODO: selectTags는 tag안에 연동된 타임테이블을 포함해서 리턴해 주어야 함.
+		return timeTags;
+	}
 
-        return null;
+	public static synchronized TimeTag selectTag(int tag_id){
+		String query;
+		query = " SELECT * FROM "   + TAGSTABLE_NAME    +
+				" LEFT OUTER JOIN " + TIMETABLES_NAME   +
+				" on "              + TAGSTABLE_NAME    + ".TAG_ID" +
+				"="                 + TIMETABLES_NAME   + ".TAG_ID" +
+				" WHERE "           + TIMETABLES_NAME   +
+				".TAG_ID = "        + tag_id            +
+				" GROUP BY "        + TAGSTABLE_NAME    + ".TAG_ID;";
+
+		SQLiteDatabase db = instance.getReadableDatabase();
+		Cursor cursor = db.rawQuery(query, null);
+
+		TimeTag timeTag = null;
+		if(cursor.moveToFirst()) {
+			timeTag = new TimeTag(cursor.getInt(0), cursor.getString(1), cursor.getLong(2), cursor.getLong(3));
+			List<TimeTable> timeTables = new LinkedList<>();
+
+			while (!cursor.isAfterLast()) {
+				if (cursor.getInt(4) != 0)
+					timeTables.add(new TimeTable(cursor.getInt(4), cursor.getInt(5), cursor.getLong(6), cursor.getLong(7)));
+				cursor.moveToNext();
+			}
+		}
+		cursor.close();
+		return timeTag;
 	}
 
 	@Override

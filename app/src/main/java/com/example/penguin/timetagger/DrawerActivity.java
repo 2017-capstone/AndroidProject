@@ -37,7 +37,7 @@ public class DrawerActivity extends AppCompatActivity
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction
-                .replace(R.id.frame_content, new NoteListFragment())
+                .replace(R.id.frame_content, new TagListFragment())
                 .addToBackStack(null)
                 .commit();
     }
