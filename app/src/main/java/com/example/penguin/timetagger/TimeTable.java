@@ -30,7 +30,7 @@ public class TimeTable{
 		this.tag_id = -1;
 		start = t1;
 		end = t2;}
-
+	public TimeTable(int i, int i2, long t1, long t2){time_id=i; tag_id=i2; start=new Timestamp(t1); end=new Timestamp(t2);}
 	public int getTimeID(){return this.time_id;}
 	public int getTagID(){return this.tag_id;}
 	public Timestamp getStart(){return start;}

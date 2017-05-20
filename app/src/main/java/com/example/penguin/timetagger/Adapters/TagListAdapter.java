@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.penguin.timetagger.Database.DatabaseHelper;
 import com.example.penguin.timetagger.Fragments.TagFragment;
 import com.example.penguin.timetagger.TimeTag;
 import com.example.penguin.timetagger.R;
@@ -48,11 +49,8 @@ public class TagListAdapter extends RecyclerView.Adapter<TagListAdapter.TagListV
 
 	public TagListAdapter(Context context){
 		this.context = context;
-		List<TimeTag> t2 = Arrays.asList(
-				new TimeTag("캡스톤 프로젝트", new Timestamp(1488412800), new Timestamp(1498262400)));
-		timeTagItems = t2;
+		timeTagItems = DatabaseHelper.selectAllTags();
 
-		//this.timeTagItems = DatabaseHelper.selectTag();
 	}
 
 	@Override

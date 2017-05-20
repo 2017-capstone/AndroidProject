@@ -24,21 +24,21 @@ public class TimeTag implements Parcelable {
 	public TimeTag(String t){tag = t;}
 	public TimeTag(String t, Timestamp t1, Timestamp t2){tag = t; start = t1; end = t2;}
 	public TimeTag(String t, Timestamp t1, Timestamp t2, List<TimeTable> tt){tag=t;start=t1;end=t2;times=tt;}
-	public TimeTag(int i, String t, Timestamp t1, Timestamp t2, List<TimeTable> tt){tag_id=i; tag=t;start=t1;end=t2;times=tt;}
-
+	public TimeTag(int i, String t, Timestamp t1, Timestamp t2){tag_id=i; tag=t;start=t1;end=t2;}
+	public TimeTag(int i, String t, Long t1, Long t2){tag_id=i; tag=t; start=new Timestamp(t1); end=new Timestamp(t2);}
 	public int getID(){return tag_id;}
 	public String getTag(){return tag;}
 	public Timestamp getStart(){return start;}
 	public Timestamp getEnd(){return end;}
-	public void setID(int i){tag_id = i;}
-	public void setTag(String t){tag = t;}
-	public void setStart(Timestamp t){start = t;}
-	public void setEnd(Timestamp t){end = t;}
-    public void setTimes(int Time_id, int Tag_id, Timestamp s, Timestamp e){times.set(times.size(), new TimeTable(Time_id, Tag_id, s, e));}
 	public List<TimeTable> getTimes(){
 		if(times == null)
 			return Collections.emptyList();
 		return times;}
+	public void setID(int i){tag_id = i;}
+	public void setTag(String t){tag = t;}
+	public void setStart(Timestamp t){start = t;}
+	public void setEnd(Timestamp t){end = t;}
+    public void setTimes(List<TimeTable> t){times = t;}
 
 	public TimeTag(Parcel in){readFromParcel(in);}
 	public TimeTag(TimeTag t){
