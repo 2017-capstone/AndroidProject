@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.example.penguin.timetagger.DrawerActivity"
+    android:orientation="vertical"
+    android:layout_margin="8dp">
+
+    <EditText
+        android:id="@+id/tagName"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Tag Name"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"
+        android:textSize="24sp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textSize="12sp"
+        android:text="Begin"/>
+    <EditText
+        android:id="@+id/tagBegin"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:textSize="16sp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:inputType="date"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textSize="12sp"
+        android:text="End"/>
+    <EditText
+        android:id="@+id/tagEnd"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:textSize="16sp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:inputType="date"/>
+    <FrameLayout
+        android:id="@+id/frame_timetable"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</LinearLayout>

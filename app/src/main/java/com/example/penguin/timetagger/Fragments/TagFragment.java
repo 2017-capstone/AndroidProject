@@ -16,6 +16,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.example.penguin.timetagger.R;
 import com.example.penguin.timetagger.TimeTag;
@@ -35,11 +37,19 @@ public class TagFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		View view = inflater.inflate(R.layout.content_note, container, false);
+		View view = inflater.inflate(R.layout.content_tag, container, false);
 		Bundle bundle = this.getArguments();
 		if(bundle != null) {
 			timeTag = bundle.getParcelable("TAG");
 		}
+		EditText et = (EditText)view.findViewById(R.id.tagName);
+		et.setText(timeTag.getTag(), TextView.BufferType.EDITABLE);
+
+		et = (EditText)view.findViewById(R.id.tagBegin);
+		et.setText(timeTag.getStart().toString(), TextView.BufferType.EDITABLE);
+
+		et = (EditText)view.findViewById(R.id.tagEnd);
+		et.setText(timeTag.getEnd().toString(), TextView.BufferType.EDITABLE);
 		//setHasOptionsMenu(true);
 		return view;
 	}
