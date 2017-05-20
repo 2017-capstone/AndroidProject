@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.penguin.timetagger.Note;
+import com.example.penguin.timetagger.TimeTable;
 import com.example.penguin.timetagger.TimeTag;
 //import com.example.penguin.timetagger.TimeTable;
 
@@ -13,6 +14,7 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.jar.Pack200;
 
 /**
@@ -33,6 +35,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public static synchronized DatabaseHelper getInstance(Context context){
+
 		if(instance == null)
 			instance = new DatabaseHelper(context);
 		return instance;
@@ -103,24 +106,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return null;
 	}
 
-	public static synchronized void insertTag(TimeTag newtag){
-		String query =  " INSERT INTO "     + TAGSTABLE_NAME     +
-						" values('"    		+ newtag.getID()     + "','"
-											+ newtag.getTag()    + "',"
-											+ newtag.getStart()  + ","
-                                            + newtag.getEnd()    + ");";
+	public static synchronized void insertTag(TimeTag tag){
+		String query =  " INSERT INTO "     + TAGSTABLE_NAME            +
+						" values("    		+ null                      + ",'"
+											+ tag.getTag()              + "',"
+											+ tag.getStart().getTime()  + ","
+                                            + tag.getEnd().getTime()    + ");";
 
 		SQLiteDatabase db = instance.getWritableDatabase();
 		db.execSQL(query);
 
 		// TODO: insert tag에서는 tag 에 연동된 타임 테이블도 추가해줘야 함
 
-        for (int i = 0; i < newtag.getListSize(); i++) {
-            query = " INSERT INTO " + TIMETABLES_NAME +
-                    " values('" + newtag.getListItemTimeID(i) + "','"
-                                + newtag.getListItemTagID(i)  + "',"
-                                + newtag.getListItemStart(i)  + ","
-                                + newtag.getListItemEnd(i)    + ");";
+		ListIterator<TimeTable> iter = tag.getTimes().listIterator();
+		while(iter.hasNext()){
+			TimeTable t = iter.next();
+			query = " INSERT INTO " + TIMETABLES_NAME           +
+					" values("      + t.getTimeID()              + ","
+									+ t.getTagID()              + ","
+									+ t.getStart().getTime()    + ","
+									+ t.getEnd().getTime()      + ");";
             db.execSQL(query);
         }
 
@@ -163,12 +168,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return null;
 	}
 
-	public void InitializeDB(SQLiteDatabase db) {
-		String query = "INSERT INTO " + TAGSTABLE_NAME +
-				" values(0, 'No Tag', null, null);";
-		db.execSQL(query);
-	}
-
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		String CREATE_TAGS = "CREATE TABLE tags(" +
@@ -190,10 +189,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						"FOREIGN KEY(TAG_ID) REFERENCES tags(TAG_ID) ); ";
 		/* TODO: 사진, 음성, 그림 등을 담을 수 있는 데이터베이스를 생성할 것 */
 		// String CREATE_ATTACHMENTS = ...
+		String INITIALIZE_DATABASE = "INSERT INTO " + TAGSTABLE_NAME +
+				" values(0, 'No Tag', null, null);";
 		db.execSQL(CREATE_TIMETABLES);
 		db.execSQL(CREATE_TAGS);
 		db.execSQL(CREATE_NOTES);
-		InitializeDB(db);
+		db.execSQL(INITIALIZE_DATABASE);
 	}
 
 	@Override
@@ -224,6 +225,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		for(int i=0; i<notes.size(); i++){
 			Note n = new Note(notes.get(i).getTitle(), notes.get(i).getBody());
 			DatabaseHelper.insertNote(n);
+		}
+		dummyNoteLoaded = true;
+	}
+
+	public static void loadDummyTags(){
+		List<TimeTag> timeTags = Arrays.asList(
+				new TimeTag("CAPSTONE", Timestamp.valueOf("2017-03-01 00:00:00"), Timestamp.valueOf("2017-06-24 00:00:00"))
+		);
+		for(int i=0; i<timeTags.size(); i++){
+			DatabaseHelper.insertTag(timeTags.get(i) );
 		}
 		dummyNoteLoaded = true;
 	}

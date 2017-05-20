@@ -9,6 +9,7 @@ import android.os.Parcelable;
 
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.List;
 
 public class TimeTag implements Parcelable {
@@ -23,6 +24,7 @@ public class TimeTag implements Parcelable {
 	public TimeTag(String t){tag = t;}
 	public TimeTag(String t, Timestamp t1, Timestamp t2){tag = t; start = t1; end = t2;}
 	public TimeTag(String t, Timestamp t1, Timestamp t2, List<TimeTable> tt){tag=t;start=t1;end=t2;times=tt;}
+	public TimeTag(int i, String t, Timestamp t1, Timestamp t2, List<TimeTable> tt){tag_id=i; tag=t;start=t1;end=t2;times=tt;}
 
 	public int getID(){return tag_id;}
 	public String getTag(){return tag;}
@@ -33,11 +35,10 @@ public class TimeTag implements Parcelable {
 	public void setStart(Timestamp t){start = t;}
 	public void setEnd(Timestamp t){end = t;}
     public void setTimes(int Time_id, int Tag_id, Timestamp s, Timestamp e){times.set(times.size(), new TimeTable(Time_id, Tag_id, s, e));}
-    public int getListSize(){return times.size();}
-    public int getListItemTimeID(int index){return times.get(index).getTimeID();}
-    public int getListItemTagID(int index){return times.get(index).getTagID();}
-    public Timestamp getListItemStart(int index){return times.get(index).getStart();}
-    public Timestamp getListItemEnd(int index){return times.get(index).getEnd();}
+	public List<TimeTable> getTimes(){
+		if(times == null)
+			return Collections.emptyList();
+		return times;}
 
 	public TimeTag(Parcel in){readFromParcel(in);}
 	public TimeTag(TimeTag t){
@@ -45,6 +46,7 @@ public class TimeTag implements Parcelable {
 		tag = t.getTag();
 		start = t.getStart();
 		end = t.getEnd();
+		times = t.getTimes();
 	}
 
 	@Override
@@ -77,39 +79,4 @@ public class TimeTag implements Parcelable {
 			return new TimeTag[size];
 		}
 	};
-}
-
-class TimeTable{
-	private int time_id;
-	private int tag_id;
-	private Timestamp start;
-	private Timestamp end;
-
-	public TimeTable(){}
-	public TimeTable(Timestamp t1, Timestamp t2){
-		this.time_id = -1;
-		this.tag_id = -1;
-		start = t1;
-		end = t2;
-	}
-	public TimeTable(int tag_id, Timestamp t1, Timestamp t2){
-		this.time_id = -1;
-		this.tag_id=tag_id;
-		start = t1;
-		end = t2;
-	}
-	public TimeTable(int time_id, int tag_id, Timestamp t1, Timestamp t2){
-		this.time_id = time_id;
-		this.tag_id = -1;
-		start = t1;
-		end = t2;}
-
-	public int getTimeID(){return this.time_id;}
-	public int getTagID(){return this.tag_id;}
-	public Timestamp getStart(){return start;}
-	public Timestamp getEnd(){return end;}
-	public void setTimeID(int i){time_id=i;}
-	public void setTagID(int i){tag_id=i;}
-	public void setStart(Timestamp t){start = t;}
-	public void setEnd(Timestamp t){end = t;}
 }

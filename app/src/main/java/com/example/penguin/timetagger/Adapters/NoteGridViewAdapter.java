@@ -15,9 +15,10 @@ import com.example.penguin.timetagger.Fragments.NoteFragment;
 import com.example.penguin.timetagger.Note;
 import com.example.penguin.timetagger.R;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import static java.lang.Boolean.TRUE;
 
 /*
  * Created by penguin on 17. 4. 30.
@@ -25,11 +26,14 @@ import static java.lang.Boolean.TRUE;
 
 public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapter.NoteGridViewHolder> {
     Context context;
+
+    private List<Integer> checkedItems;
     private List<Note> noteItems;
     private static boolean checkBoxShow = false;
 
     public void setCheckBoxShow(boolean b){
         checkBoxShow = b;
+        checkedItems = new ArrayList<>();
         notifyDataSetChanged();
     }
 
@@ -99,8 +103,14 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
         if(checkBoxShow){
             _cb.setVisibility(View.VISIBLE);
             _cb.setClickable(true);
+            if(checkedItems.contains(position))
+                _cb.setChecked(true);
+            else
+                _cb.setChecked(false);
+
         }
         else {
+            if(checkedItems != null) checkedItems.clear();
             _cb.setChecked(false);
             _cb.setClickable(false);
             _cb.setVisibility(View.INVISIBLE);
@@ -110,16 +120,19 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
         holder.cv.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                int p = position;
                 Note note = noteItems.get(position);
                 NoteFragment fragment = NoteFragment.newInstance(note);
-
+                /* 체크 박스 표시 */
                 if(checkBoxShow){
                     CheckBox cb = (CheckBox) v.findViewById(R.id.noteCheckBox);
-                    //cb.setVisibility(View.VISIBLE);
-                    if(cb.isChecked()) cb.setChecked(false);
-                    else cb.setChecked(true);
+                    if(checkedItems.contains(position))
+                        cb.setChecked(false);
+                    else{
+                        checkedItems.add(position);
+                        cb.setChecked(true);
+                    }
                 }
+                /* 개별 항목 선택 */
                 else {
                     ((FragmentActivity) context).getSupportFragmentManager()
                             .beginTransaction()
@@ -134,11 +147,9 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
         holder.cv.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                setCheckBoxShow(!checkBoxShow);
-
+                setCheckBoxShow(true);
                 CheckBox cb = (CheckBox) v.findViewById(R.id.noteCheckBox);
                 cb.setVisibility(View.VISIBLE);
-                //cb.setChecked(true);
 
                 return true;
             }

@@ -7,7 +7,7 @@
         jumboMode="true"
         optimize="true"
         revision="25.0.2"
-        sha1="17163c21938f05cea51a5653f49025b016266b5e">
+        sha1="ac6f948d1b39c56f6da55ec4795712fec0faad5b">
         <dex dex="/home/penguin/AndroidStudioProjects/TimeTagger/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_91544f5948c324ea3fcb0456427c2f9f0bf435a6/classes.dex" />
     </item>
     <item

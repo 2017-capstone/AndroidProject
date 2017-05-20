@@ -25,14 +25,12 @@ public class TagListAdapter extends RecyclerView.Adapter<TagListAdapter.TagListV
 	private Context context;
 	private List<TimeTag> timeTagItems;
 	public class TagListViewHolder extends RecyclerView.ViewHolder{
-		/* TODO: 데이터 베이스 설계에 맞게 수정됨 1 */
 		TextView v_tag;
 		TextView v_duration;
 		CardView cv;
 
 		public TagListViewHolder(View v){
 			super(v);
-            /* TODO: 데이터 베이스 설계에 맞게 수정됨 2 */
 			v_tag = (TextView) v.findViewById(R.id.tagTag);
 			v_duration = (TextView) v.findViewById(R.id.tagDuration);
 			cv = (CardView)v.findViewById(R.id.tagItem);
@@ -79,7 +77,6 @@ public class TagListAdapter extends RecyclerView.Adapter<TagListAdapter.TagListV
 						.replace(R.id.frame_content, fragment)
 						.addToBackStack(null)
 						.commit();
-
 			}
 		});
 	}
