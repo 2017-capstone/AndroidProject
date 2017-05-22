@@ -124,6 +124,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return null;
 	}
 
+	public static synchronized void deleteNote(int note_id){}
+
+	public static synchronized void deleteNotes(List<Integer> note_ids){}
+
+
 	/* TAGS */
 	public static synchronized void insertTag(TimeTag tag){
 		String query =  " INSERT INTO "     + TAGSTABLE_NAME            +

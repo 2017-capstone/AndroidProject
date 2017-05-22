@@ -54,6 +54,7 @@ public class NoteListFragment extends Fragment {
         }
         DatabaseHelper.getInstance(getActivity());
         // TODO: 1회 실행후, 다음 줄은 주석 처리 할 것.
+        //DatabaseHelper.loadDummyNotes();
         try {
             StaggeredGridLayoutManager sgl =
                     new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
