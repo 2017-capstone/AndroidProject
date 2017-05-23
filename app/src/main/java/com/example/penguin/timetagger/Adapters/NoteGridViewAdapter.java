@@ -125,8 +125,10 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
                 /* 체크 박스 표시 */
                 if(checkBoxShow){
                     CheckBox cb = (CheckBox) v.findViewById(R.id.noteCheckBox);
-                    if(checkedItems.contains(position))
+                    if(checkedItems.contains(position)) {
+                        checkedItems.remove(position);
                         cb.setChecked(false);
+                    }
                     else{
                         checkedItems.add(position);
                         cb.setChecked(true);
@@ -147,9 +149,18 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
         holder.cv.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                setCheckBoxShow(true);
+                setCheckBoxShow(!checkBoxShow);
                 CheckBox cb = (CheckBox) v.findViewById(R.id.noteCheckBox);
-                cb.setVisibility(View.VISIBLE);
+                if(checkBoxShow) {
+                    cb.setVisibility(View.VISIBLE);
+                    cb.setChecked(true);
+                    checkedItems.add(position);
+                }
+                else {
+                    cb.setVisibility(View.INVISIBLE);
+                    cb.setChecked(false);
+                    checkedItems.clear();
+                }
 
                 return true;
             }
