@@ -124,9 +124,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return null;
 	}
 
-	public static synchronized void deleteNote(int note_id){}
+	public static synchronized void deleteNote(int note_id){
+		String query =  " DELETE FROM "     + NOTESTABLE_NAME   +
+						" WHERE NOTE_ID = " + note_id 			+";";
 
-	public static synchronized void deleteNotes(List<Integer> note_ids){}
+		SQLiteDatabase db = instance.getWritableDatabase();
+		db.execSQL(query);
+	}
+
+	public static synchronized void deleteNotes(List<Integer> note_ids){
+		String query;
+		SQLiteDatabase db;
+
+		for(int i = 0; i < note_ids.size(); i++) {
+			query = " DELETE FROM " 	+ NOTESTABLE_NAME +
+					" WHERE NOTE_ID = " + note_ids.get(i) + ";";
+
+			db = instance.getWritableDatabase();
+			db.execSQL(query);
+		}
+	}
 
 
 	/* TAGS */

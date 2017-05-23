@@ -3,6 +3,7 @@ package com.example.penguin.timetagger.Fragments;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.INotificationSideChannel;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -19,6 +20,8 @@ import com.example.penguin.timetagger.Note;
 import com.example.penguin.timetagger.R;
 import com.example.penguin.timetagger.TimeTag;
 
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public class NoteListFragment extends Fragment {
@@ -54,7 +57,7 @@ public class NoteListFragment extends Fragment {
         }
         DatabaseHelper.getInstance(getActivity());
         // TODO: 1회 실행후, 다음 줄은 주석 처리 할 것.
-        DatabaseHelper.loadDummyNotes();
+        //DatabaseHelper.loadDummyNotes();
         //DatabaseHelper.loadDummyTags();
         try {
             StaggeredGridLayoutManager sgl =
