@@ -14,7 +14,7 @@ public class Note implements Parcelable {
     private String title;
     private String body;
 
-    public Note(){}
+    public Note(){note_id = -1;}
     public Note(String t, String b){note_id = -1; tag_id = 0; title = t; body = b;}
     public Note(int ni, int ti, String t, String b){note_id=ni; tag_id=ti; title = t; body = b;}
     public int getNoteID(){return note_id;}
