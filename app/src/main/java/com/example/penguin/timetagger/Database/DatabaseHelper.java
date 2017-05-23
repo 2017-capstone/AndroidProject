@@ -44,7 +44,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	/* NOTES */
 	public static synchronized Note insertNote(Note note){
 		String query =  " INSERT INTO "     + NOTESTABLE_NAME   +
-						" values(NULL,'"    + note.getTagID()     + "','"
+						" values(NULL,"     + note.getTagID()   + ",'"
 										    + note.getTitle()   + "','"
 											+ note.getBody()    + "');";
 
