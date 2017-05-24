@@ -42,7 +42,7 @@ public class TagFragment extends Fragment {
 		if(bundle != null) {
 			timeTag = bundle.getParcelable("TAG");
 		}
-		EditText et = (EditText)view.findViewById(R.id.tagName);
+		EditText et = (EditText)getActivity().findViewById(R.id.tagName);
 		et.setText(timeTag.getTag(), TextView.BufferType.EDITABLE);
 
 		et = (EditText)view.findViewById(R.id.tagBegin);

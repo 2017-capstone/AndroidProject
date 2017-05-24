@@ -4,18 +4,23 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.INotificationSideChannel;
+import android.support.v4.view.KeyEventCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.example.penguin.timetagger.Adapters.NoteGridViewAdapter;
 import com.example.penguin.timetagger.Database.DatabaseHelper;
+import com.example.penguin.timetagger.DrawerActivity;
 import com.example.penguin.timetagger.Note;
 import com.example.penguin.timetagger.R;
 import com.example.penguin.timetagger.TimeTag;
@@ -30,6 +35,9 @@ public class NoteListFragment extends Fragment {
     private List<Note> notes;
     RecyclerView rv;
     LinearLayoutManager lm;
+
+    private Menu menu;
+    private Boolean isEditTitle = false;
     public static NoteListFragment newInstance(TimeTag timeTag){
         Bundle bundle = new Bundle();
         bundle.putParcelable("TIMETAG", timeTag);
@@ -54,6 +62,11 @@ public class NoteListFragment extends Fragment {
         if(bundle != null){
             timeTag = bundle.getParcelable("TIMETAG");
             tag_id = timeTag.getID();
+        }else {
+            EditText et = (EditText)(getActivity()).findViewById(R.id.toolbar_et);
+            et.setText("AllTag");
+            et.getBackground().clearColorFilter();
+            view.requestFocus();
         }
         DatabaseHelper.getInstance(getActivity());
         // TODO: 1회 실행후, 다음 줄은 주석 처리 할 것.
@@ -79,6 +92,7 @@ public class NoteListFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.listview_menu, menu);
+        this.menu = menu;
     }
 
     @Override
