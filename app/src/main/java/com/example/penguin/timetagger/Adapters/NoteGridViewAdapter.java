@@ -29,11 +29,11 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
 
     private List<Integer> checkedItems;
     private List<Note> noteItems;
-    private static boolean checkBoxShow = false;
+    public static boolean checkBoxShow = false;
 
     public void setCheckBoxShow(boolean b){
         checkBoxShow = b;
-        checkedItems = new ArrayList<>();
+        if(checkedItems == null) checkedItems = new ArrayList<>();
         notifyDataSetChanged();
     }
 
@@ -149,25 +149,19 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
         holder.cv.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                setCheckBoxShow(!checkBoxShow);
-                CheckBox cb = (CheckBox) v.findViewById(R.id.noteCheckBox);
-                if(checkBoxShow) {
+                if(!checkBoxShow) {
+                    setCheckBoxShow(true);
+                    CheckBox cb = (CheckBox) v.findViewById(R.id.noteCheckBox);
                     cb.setVisibility(View.VISIBLE);
                     cb.setChecked(true);
-                    checkedItems.add(position);
-                }
-                else {
-                    cb.setVisibility(View.INVISIBLE);
-                    cb.setChecked(false);
-                    checkedItems.clear();
+                    if (!checkedItems.contains(position)) checkedItems.add(position);
                 }
 
                 return true;
             }
         });
 
-        // 뒤로가기 버튼
-        // 나중에 넣길바람
+        // 뒤로가기 버튼 처리는 액티비티에서 해결
     }
 
     @Override
