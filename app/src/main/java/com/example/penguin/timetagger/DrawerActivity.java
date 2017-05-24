@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.example.penguin.timetagger.Adapters.NoteGridViewAdapter;
 import com.example.penguin.timetagger.Fragments.SettingsFragment;
 import com.example.penguin.timetagger.Fragments.NoteListFragment;
 import com.example.penguin.timetagger.Fragments.TagListFragment;
@@ -45,10 +46,15 @@ public class DrawerActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
+        if(NoteGridViewAdapter.checkBoxShow) {
+            NoteGridViewAdapter.checkBoxShow = false;
+        }
+        else {
+            if (drawer.isDrawerOpen(GravityCompat.START)) {
+                drawer.closeDrawer(GravityCompat.START);
+            } else {
+                super.onBackPressed();
+            }
         }
     }
 

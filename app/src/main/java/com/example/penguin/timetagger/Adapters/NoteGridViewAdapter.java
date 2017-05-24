@@ -29,11 +29,11 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
 
     private List<Integer> checkedItems;
     private List<Note> noteItems;
-    private static boolean checkBoxShow = false;
+    public static boolean checkBoxShow = false;
 
     public void setCheckBoxShow(boolean b){
         checkBoxShow = b;
-        checkedItems = new ArrayList<>();
+        if(checkedItems == null) checkedItems = new ArrayList<>();
         notifyDataSetChanged();
     }
 
@@ -125,8 +125,10 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
                 /* 체크 박스 표시 */
                 if(checkBoxShow){
                     CheckBox cb = (CheckBox) v.findViewById(R.id.noteCheckBox);
-                    if(checkedItems.contains(position))
+                    if(checkedItems.contains(position)) {
+                        checkedItems.remove(position);
                         cb.setChecked(false);
+                    }
                     else{
                         checkedItems.add(position);
                         cb.setChecked(true);
@@ -147,16 +149,19 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
         holder.cv.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                setCheckBoxShow(true);
-                CheckBox cb = (CheckBox) v.findViewById(R.id.noteCheckBox);
-                cb.setVisibility(View.VISIBLE);
+                if(!checkBoxShow) {
+                    setCheckBoxShow(true);
+                    CheckBox cb = (CheckBox) v.findViewById(R.id.noteCheckBox);
+                    cb.setVisibility(View.VISIBLE);
+                    cb.setChecked(true);
+                    if (!checkedItems.contains(position)) checkedItems.add(position);
+                }
 
                 return true;
             }
         });
 
-        // 뒤로가기 버튼
-        // 나중에 넣길바람
+        // 뒤로가기 버튼 처리는 액티비티에서 해결
     }
 
     @Override
