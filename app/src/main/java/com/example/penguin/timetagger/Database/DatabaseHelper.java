@@ -46,7 +46,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		String query =  " INSERT INTO "     + NOTESTABLE_NAME   +
 						" values(NULL,"     + note.getTagID()   + ",'"
 										    + note.getTitle()   + "','"
-											+ note.getBody()    + "');";
+											+ note.getBody()	+ "','"
+											+ note.getPhoto()    + "');";
 
 		SQLiteDatabase db = instance.getWritableDatabase();
 		db.execSQL(query);
@@ -62,7 +63,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		String query =  " UPDATE "          + NOTESTABLE_NAME   +
 						" SET TAG_ID = "    + note.getTagID()   + "," +
 						" TITLE = '"        + note.getTitle()   + "'," +
-						" BODY = '"         + note.getBody()    + "'" +
+						" BODY = '"         + note.getBody()    + "'," +
+						" PHOTO = '"  		 + note.getPhoto() + "'" +
 						" WHERE NOTE_ID = " + note.getNoteID()  + ";";
 
 		SQLiteDatabase db = instance.getWritableDatabase();
@@ -80,7 +82,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		if(cursor.moveToFirst()){
 			while(!cursor.isAfterLast()) {
 				Note note = new Note(cursor.getInt(0), cursor.getInt(1),
-						cursor.getString(2), cursor.getString(3));
+						cursor.getString(2), cursor.getString(3), cursor.getString(4));
 				notes.add(note);
 				cursor.moveToNext();
 			}
@@ -100,7 +102,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		if(cursor.moveToFirst()){
 			while(!cursor.isAfterLast()) {
 				Note note = new Note(cursor.getInt(0), cursor.getInt(1),
-									 cursor.getString(2), cursor.getString(3));
+									 cursor.getString(2), cursor.getString(3), cursor.getString(4));
 				notes.add(note);
 				cursor.moveToNext();
 			}
@@ -117,7 +119,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		if(cursor.moveToFirst()){
 			Note note = new Note(cursor.getInt(0), cursor.getInt(1),
-								 cursor.getString(2), cursor.getString(3));
+								 cursor.getString(2), cursor.getString(3), cursor.getString(4));
 			return note;
 		}
 		cursor.close();
@@ -237,6 +239,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						"TAG_ID INTEGER, " +
 						"TITLE TEXT, " +
 						"BODY TEXT, " +
+						"PHOTO TEXT, " +
 						"FOREIGN KEY(TAG_ID) REFERENCES tags(TAG_ID) ); ";
 		/* TODO: 사진, 음성, 그림 등을 담을 수 있는 데이터베이스를 생성할 것 */
 		// String CREATE_ATTACHMENTS = ...

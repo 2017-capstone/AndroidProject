@@ -1,6 +1,8 @@
 package com.example.penguin.timetagger.Adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.penguin.timetagger.Database.DatabaseHelper;
@@ -15,6 +18,8 @@ import com.example.penguin.timetagger.Fragments.NoteFragment;
 import com.example.penguin.timetagger.Note;
 import com.example.penguin.timetagger.R;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,6 +48,7 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
         TextView v_summary;
         CardView cv;
         CheckBox cb;
+        ImageView img;
 
         public NoteGridViewHolder(View v){
             super(v);
@@ -51,6 +57,7 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
             v_summary = (TextView) v.findViewById(R.id.noteItemSummary);
             cv = (CardView) v.findViewById(R.id.noteItem);
             cb = (CheckBox) v.findViewById(R.id.noteCheckBox);
+            img = (ImageView) v.findViewById(R.id.noteItemImage);
         }
     }
 
@@ -97,6 +104,9 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
             bodyString = bodyString.substring(0, MAX_STRING) + "...";
             holder.v_summary.setText(bodyString);
         }
+
+        // 이미지 보여주기
+        // 아직 없음
 
         // 체크박스 표시 또는 숨기기 (클릭커블 포함)
         CheckBox _cb = holder.cb;
