@@ -32,6 +32,8 @@ import com.example.penguin.timetagger.Note;
 import com.example.penguin.timetagger.R;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class NoteFragment extends Fragment {
     ActionBar toolbar;
@@ -102,11 +104,13 @@ public class NoteFragment extends Fragment {
             // 카메라 실행
             Intent intent = new Intent();
             intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-            File photo = new File(Environment.getExternalStorageDirectory(),  "Pic.jpg");
+            String dir = "TimeTagger-" + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss")
+                    .format(new Date(System.currentTimeMillis()))
+                    + ".jpg";
+            File photo = new File(Environment.getExternalStorageDirectory(), dir);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
             imageUri = Uri.fromFile(photo);
             startActivityForResult(intent, 1);
-            //startActivityForResult(intent,1);
         }
 
         return super.onOptionsItemSelected(item);
