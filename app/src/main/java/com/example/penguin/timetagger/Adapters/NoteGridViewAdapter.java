@@ -2,6 +2,8 @@ package com.example.penguin.timetagger.Adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.media.Image;
+import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
@@ -106,7 +108,9 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
         }
 
         // 이미지 보여주기
-        // 아직 없음
+        if(noteItems.get(position).getPhoto() != null){
+            holder.img.setImageURI(Uri.parse(noteItems.get(position).getPhoto()));
+        }
 
         // 체크박스 표시 또는 숨기기 (클릭커블 포함)
         CheckBox _cb = holder.cb;
@@ -132,14 +136,22 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
             public void onClick(View v){
                 Note note = noteItems.get(position);
                 NoteFragment fragment = NoteFragment.newInstance(note);
+
                 /* 체크 박스 표시 */
                 if(checkBoxShow){
                     CheckBox cb = (CheckBox) v.findViewById(R.id.noteCheckBox);
                     if(checkedItems.contains(position)) {
-                        checkedItems.remove(position);
+                        // 체크 해제
+                        for(int i = 0; i < checkedItems.size(); i++){
+                            if(checkedItems.get(i) == position){
+                                checkedItems.remove(i);
+                                break;
+                            }
+                        }
                         cb.setChecked(false);
                     }
                     else{
+                        // 체크 표시
                         checkedItems.add(position);
                         cb.setChecked(true);
                     }
@@ -159,6 +171,7 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
         holder.cv.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+                // 롱클릭 시 체크 표시 및 해당 터치 노트는 바로 선택됨
                 if(!checkBoxShow) {
                     setCheckBoxShow(true);
                     CheckBox cb = (CheckBox) v.findViewById(R.id.noteCheckBox);
