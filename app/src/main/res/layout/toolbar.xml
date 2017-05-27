@@ -25,11 +25,13 @@
                 app:popupTheme="@style/AppTheme.PopupOverlay">
                 <EditText
                     android:id="@+id/toolbar_et"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:imeOptions="actionDone"
-                    android:background="#00000000"/>
-            </android.support.v7.widget.Toolbar>>
+                    android:maxLines="1"
+                    android:inputType="text"
+                    android:background="#00000000"
+                    android:imeOptions="actionDone"/>
+            </android.support.v7.widget.Toolbar>
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
     <FrameLayout
