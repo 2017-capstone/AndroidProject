@@ -4,10 +4,12 @@
         android:id="@+id/total_view"
         android:checkableBehavior="single">
         <item
+            android:orderInCategory="0"
             android:id="@+id/nav_total_tag"
             android:icon="@drawable/ic_collections_bookmark"
             android:title="모든 태그" />
         <item
+            android:orderInCategory="0"
             android:id="@+id/nav_total_alarm"
             android:icon="@drawable/ic_notifications"
             android:title="모든 알람" />
@@ -15,23 +17,18 @@
     <group
         android:id="@+id/single_view"
         android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_tag1"
-            android:icon="@drawable/ic_class"
-            android:title="태그 1" />
-        <item
-            android:id="@+id/nav_tag2"
-            android:icon="@drawable/ic_class"
-            android:title="태그 2" />
+
     </group>
     <group
         android:id="@+id/others"
         android:checkableBehavior="single">
         <item
+            android:orderInCategory="2"
             android:id="@+id/nav_tagsettings"
             android:icon="@drawable/ic_bookmark"
             android:title="태그 설정"/>
         <item
+            android:orderInCategory="2"
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_settings"
             android:title="설정" />
