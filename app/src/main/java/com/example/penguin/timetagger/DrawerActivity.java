@@ -9,12 +9,17 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.penguin.timetagger.Database.DatabaseHelper;
+import com.example.penguin.timetagger.Fragments.NoteFragment;
 import com.example.penguin.timetagger.Fragments.SettingsFragment;
 import com.example.penguin.timetagger.Fragments.NoteListFragment;
 import com.example.penguin.timetagger.Fragments.TagListFragment;
 import com.example.penguin.timetagger.R;
+
+import java.util.List;
 
 public class DrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -26,20 +31,39 @@ public class DrawerActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // 네비게이션 생성
+        createNavigation();
+
+        // 초기 뷰(현재 시간에 맞는 뷰가 되야 함)
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction
+                .replace(R.id.frame_content, new NoteListFragment())
+                .addToBackStack(null)
+                .commit();
+    }
+
+    protected void createNavigation(){
+        // 네비게이션 연결
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        // 메뉴 생성
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        Menu menu = navigationView.getMenu();
+        DatabaseHelper.getInstance(this);
+        List<TimeTag> timeTags = DatabaseHelper.selectAllTags();
+        for(int i=0; i<timeTags.size(); i++)
+            menu.add(R.id.single_view,
+                     timeTags.get(i).getID() << 4,
+                     1/*Group1:singleTag*/,
+                     timeTags.get(i).getTag())
+                    .setIcon(R.drawable.ic_class);
 
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction
-                .replace(R.id.frame_content, new NoteListFragment())
-                .addToBackStack(null)
-                .commit();
+        navigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
@@ -66,17 +90,17 @@ public class DrawerActivity extends AppCompatActivity
         } else if (id == R.id.nav_total_alarm) {
             movetoFragment(new NoteListFragment());
 
-        } else if (id == R.id.nav_tag1) {
-            movetoFragment(new NoteListFragment());
-
-        } else if (id == R.id.nav_tag2) {
-            movetoFragment(new NoteListFragment());
 
         } else if (id == R.id.nav_tagsettings) {
             movetoFragment(new TagListFragment());
 
         }else if (id == R.id.nav_settings) {
             movetoFragment(new SettingsFragment());
+        }else{
+            id = id >> 4;
+            TimeTag timeTag = DatabaseHelper.selectTag(id);
+            NoteListFragment nlFragment = NoteListFragment.newInstance(timeTag);
+            movetoFragment(nlFragment);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

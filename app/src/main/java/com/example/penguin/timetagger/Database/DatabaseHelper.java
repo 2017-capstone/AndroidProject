@@ -214,7 +214,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				" LEFT OUTER JOIN " + TIMETABLES_NAME   +
 				" on "              + TAGSTABLE_NAME    + ".TAG_ID" +
 				"="                 + TIMETABLES_NAME   + ".TAG_ID" +
-				" WHERE "           + TIMETABLES_NAME   +
+				" WHERE "           + TAGSTABLE_NAME   +
 				".TAG_ID = "        + tag_id            +
 				" GROUP BY "        + TAGSTABLE_NAME    + ".TAG_ID;";
 
