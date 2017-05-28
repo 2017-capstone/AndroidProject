@@ -22,7 +22,14 @@
                 android:fitsSystemWindows="true"
                 android:background="?attr/colorPrimary"
                 app:layout_collapseMode="parallax"
-                app:popupTheme="@style/AppTheme.PopupOverlay" />
+                app:popupTheme="@style/AppTheme.PopupOverlay">
+                <EditText
+                    android:id="@+id/toolbar_et"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:imeOptions="actionDone"
+                    android:background="#00000000"/>
+            </android.support.v7.widget.Toolbar>>
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
     <FrameLayout
