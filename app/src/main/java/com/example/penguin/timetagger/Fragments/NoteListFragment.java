@@ -9,12 +9,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.InputType;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -31,7 +33,7 @@ import java.util.List;
 
 public class NoteListFragment extends Fragment {
     private TimeTag timeTag;
-    private int tag_id = 0;
+    private int tag_id;
     private List<Note> notes;
     private NoteGridViewAdapter nia;
     RecyclerView rv;
@@ -60,15 +62,31 @@ public class NoteListFragment extends Fragment {
                 });
         // 기존 노트 작성
         Bundle bundle = this.getArguments();
+
+        String tag_name;
         if(bundle != null){
             timeTag = bundle.getParcelable("TIMETAG");
             tag_id = timeTag.getID();
+            tag_name = timeTag.getTag();
         }else {
-            EditText et = (EditText)(getActivity()).findViewById(R.id.toolbar_et);
-            et.setText("AllTag");
-            et.getBackground().clearColorFilter();
-            view.requestFocus();
+            tag_name = "AllTags";
+            tag_id = 0;
         }
+        EditText etTag = (EditText)(getActivity()).findViewById(R.id.toolbar_et);
+        etTag.setText(tag_name);
+        etTag.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId == 4 || actionId == 6){
+                    System.out.println("");
+                    /* TODO: Database함수로 tag 업데이트 */
+                    return true;
+                }
+                return false;
+            }
+        });
+        view.requestFocus();
+
         DatabaseHelper.getInstance(getActivity());
         // TODO: 1회 실행후, 다음 줄은 주석 처리 할 것.
         //DatabaseHelper.loadDummyNotes();
