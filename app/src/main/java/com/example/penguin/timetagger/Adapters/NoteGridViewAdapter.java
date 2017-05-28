@@ -1,6 +1,7 @@
 package com.example.penguin.timetagger.Adapters;
 
 import android.content.Context;
+
 import android.graphics.Bitmap;
 import android.media.Image;
 import android.net.Uri;
@@ -20,10 +21,15 @@ import com.example.penguin.timetagger.Fragments.NoteFragment;
 import com.example.penguin.timetagger.Note;
 import com.example.penguin.timetagger.R;
 
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 import java.util.List;
 
 
@@ -34,13 +40,28 @@ import java.util.List;
 public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapter.NoteGridViewHolder> {
     Context context;
 
-    private List<Integer> checkedItems;
     private List<Note> noteItems;
+    private HashMap<Integer, Integer> checkedItems = new HashMap<>();
     public static boolean checkBoxShow = false;
+
+    public void deleteCheckedNotes() {
+        List<Integer> checkedNoteIDs = new LinkedList<>();
+        for (int noteID : checkedItems.values()) {
+            checkedNoteIDs.add(noteID);
+            for (int i = 0; i < noteItems.size(); i++) {
+                if (noteID == noteItems.get(i).getNoteID())
+                    noteItems.remove(i);
+            }
+        }
+        DatabaseHelper.deleteNotes(checkedNoteIDs);
+        checkBoxShow = false;
+        notifyDataSetChanged();
+
+    }
 
     public void setCheckBoxShow(boolean b){
         checkBoxShow = b;
-        if(checkedItems == null) checkedItems = new ArrayList<>();
+        if(checkedItems == null) checkedItems = new HashMap<>();
         notifyDataSetChanged();
     }
 
@@ -88,6 +109,7 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
     public NoteGridViewAdapter(Context context, int tag_id){
         this.context = context;
         this.noteItems = DatabaseHelper.selectNotes(tag_id);
+
         //this.noteItems = noteItems;
     }
 
@@ -117,7 +139,8 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
         if(checkBoxShow){
             _cb.setVisibility(View.VISIBLE);
             _cb.setClickable(true);
-            if(checkedItems.contains(position))
+
+            if(checkedItems.containsKey(position))
                 _cb.setChecked(true);
             else
                 _cb.setChecked(false);
@@ -140,19 +163,14 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
                 /* 체크 박스 표시 */
                 if(checkBoxShow){
                     CheckBox cb = (CheckBox) v.findViewById(R.id.noteCheckBox);
-                    if(checkedItems.contains(position)) {
-                        // 체크 해제
-                        for(int i = 0; i < checkedItems.size(); i++){
-                            if(checkedItems.get(i) == position){
-                                checkedItems.remove(i);
-                                break;
-                            }
-                        }
+
+                    if(checkedItems.containsKey(position)) {
+                        checkedItems.remove(position);
                         cb.setChecked(false);
                     }
                     else{
-                        // 체크 표시
-                        checkedItems.add(position);
+                        checkedItems.put(position, note.getNoteID());
+
                         cb.setChecked(true);
                     }
                 }
@@ -171,13 +189,17 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
         holder.cv.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+
                 // 롱클릭 시 체크 표시 및 해당 터치 노트는 바로 선택됨
+
+                Note note = noteItems.get(position);
+
                 if(!checkBoxShow) {
                     setCheckBoxShow(true);
                     CheckBox cb = (CheckBox) v.findViewById(R.id.noteCheckBox);
                     cb.setVisibility(View.VISIBLE);
                     cb.setChecked(true);
-                    if (!checkedItems.contains(position)) checkedItems.add(position);
+                    if (!checkedItems.containsKey(position)) checkedItems.put(position,note.getNoteID());
                 }
 
                 return true;

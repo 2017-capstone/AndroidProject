@@ -13,8 +13,12 @@ import android.support.annotation.*;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+
+import android.view.KeyEvent;
+
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -54,15 +58,41 @@ public class NoteFragment extends Fragment {
         View view = inflater.inflate(R.layout.content_note, container, false);
         Bundle bundle = this.getArguments();
 
+
+
+        String noteTitle;
+        String noteBody;
+
         if(bundle != null) {
             note = bundle.getParcelable("NOTE");
+            noteTitle = note.getTitle();
+            noteBody = note.getBody();
+        }else{
+            noteTitle = null;
+            noteBody = null;
         }
-
-        EditText et = (EditText)view.findViewById(R.id.edit_text);
-        et.setText(note.getBody(), TextView.BufferType.EDITABLE);
 
         if(note.getPhoto() != null) imageUri = Uri.parse(note.getPhoto());
         Log.d("ImageViewURITest", "LoadURI=>"+note.getPhoto());
+
+
+        EditText etNoteTitle = (EditText)(getActivity()).findViewById(R.id.toolbar_et);
+        etNoteTitle.setText(noteTitle);
+        etNoteTitle.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId == 4 || actionId == 6){
+                    System.out.println("");
+                    /* TODO: Database함수로 tag 업데이트 */
+                    return true;
+                }
+                return false;
+            }
+        });
+        EditText etNoteBody = (EditText)view.findViewById(R.id.edit_text);
+        etNoteBody.setText(noteBody, TextView.BufferType.EDITABLE);
+
+        view.requestFocus();
 
         setHasOptionsMenu(true);
         return view;
@@ -87,11 +117,16 @@ public class NoteFragment extends Fragment {
         int id = item.getItemId();
 
         if (id == R.id.action_save) {
+	        EditText etNoteTitle = (EditText)(getActivity()).findViewById(R.id.toolbar_et);
             EditText et = (EditText)getActivity().findViewById(R.id.edit_text);
-            String body = et.getText().toString();
 
-            note.setBody(body);
             if(imageUri != null) note.setPhotoDir(imageUri.toString());
+
+	        String noteTitle = etNoteTitle.getText().toString();
+            String noteBody = et.getText().toString();
+	        note.setTitle(noteTitle);
+            note.setBody(noteBody);
+
 
             if(note.getNoteID() == -1)
                 DatabaseHelper.insertNote(note);
