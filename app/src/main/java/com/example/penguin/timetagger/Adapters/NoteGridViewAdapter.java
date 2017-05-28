@@ -1,7 +1,10 @@
 package com.example.penguin.timetagger.Adapters;
 
 import android.content.Context;
-import android.provider.ContactsContract;
+import android.graphics.Bitmap;
+import android.media.Image;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.penguin.timetagger.Database.DatabaseHelper;
@@ -16,9 +20,13 @@ import com.example.penguin.timetagger.Fragments.NoteFragment;
 import com.example.penguin.timetagger.Note;
 import com.example.penguin.timetagger.R;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -60,6 +68,7 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
         TextView v_summary;
         CardView cv;
         CheckBox cb;
+        ImageView img;
 
         public NoteGridViewHolder(View v){
             super(v);
@@ -68,6 +77,7 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
             v_summary = (TextView) v.findViewById(R.id.noteItemSummary);
             cv = (CardView) v.findViewById(R.id.noteItem);
             cb = (CheckBox) v.findViewById(R.id.noteCheckBox);
+            img = (ImageView) v.findViewById(R.id.noteItemImage);
         }
     }
 
@@ -96,7 +106,6 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
     public NoteGridViewAdapter(Context context, int tag_id){
         this.context = context;
         this.noteItems = DatabaseHelper.selectNotes(tag_id);
-
         //this.noteItems = noteItems;
     }
 
@@ -114,6 +123,11 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
         else{
             bodyString = bodyString.substring(0, MAX_STRING) + "...";
             holder.v_summary.setText(bodyString);
+        }
+
+        // 이미지 보여주기
+        if(noteItems.get(position).getPhoto() != null){
+            holder.img.setImageURI(Uri.parse(noteItems.get(position).getPhoto()));
         }
 
         // 체크박스 표시 또는 숨기기 (클릭커블 포함)
@@ -141,14 +155,17 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
             public void onClick(View v){
                 Note note = noteItems.get(position);
                 NoteFragment fragment = NoteFragment.newInstance(note);
+
                 /* 체크 박스 표시 */
                 if(checkBoxShow){
                     CheckBox cb = (CheckBox) v.findViewById(R.id.noteCheckBox);
+                        // 체크 해제
                     if(checkedItems.containsKey(position)) {
                         checkedItems.remove(position);
                         cb.setChecked(false);
                     }
                     else{
+                        // 체크 표시
                         checkedItems.put(position, note.getNoteID());
                         cb.setChecked(true);
                     }
@@ -168,13 +185,14 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
         holder.cv.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+                // 롱클릭 시 체크 표시 및 해당 터치 노트는 바로 선택됨
                 Note note = noteItems.get(position);
                 if(!checkBoxShow) {
                     setCheckBoxShow(true);
                     CheckBox cb = (CheckBox) v.findViewById(R.id.noteCheckBox);
                     cb.setVisibility(View.VISIBLE);
                     cb.setChecked(true);
-                    if (!checkedItems.containsKey(position)) checkedItems.put(position,note.getNoteID());
+                    if (!checkedItems.containsKey(position)) checkedItems.put(position, note.getNoteID());
                 }
 
                 return true;
