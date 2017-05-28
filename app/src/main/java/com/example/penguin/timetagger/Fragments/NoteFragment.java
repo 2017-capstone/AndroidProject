@@ -13,9 +13,9 @@ import android.support.annotation.*;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.view.KeyEvent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -55,8 +55,11 @@ public class NoteFragment extends Fragment {
         View view = inflater.inflate(R.layout.content_note, container, false);
         Bundle bundle = this.getArguments();
 
+
+
         String noteTitle;
         String noteBody;
+
         if(bundle != null) {
             note = bundle.getParcelable("NOTE");
             noteTitle = note.getTitle();
@@ -65,6 +68,11 @@ public class NoteFragment extends Fragment {
             noteTitle = null;
             noteBody = null;
         }
+
+        if(note.getPhoto() != null) imageUri = Uri.parse(note.getPhoto());
+        Log.d("ImageViewURITest", "LoadURI=>"+note.getPhoto());
+
+
         EditText etNoteTitle = (EditText)(getActivity()).findViewById(R.id.toolbar_et);
         etNoteTitle.setText(noteTitle);
         etNoteTitle.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -83,11 +91,7 @@ public class NoteFragment extends Fragment {
 
         view.requestFocus();
 
-
-	    if(note.getPhoto() != null) imageUri = Uri.parse(note.getPhoto());
-	    Log.d("ImageViewURITest", "LoadURI=>"+note.getPhoto());
-
-	    setHasOptionsMenu(true);
+        setHasOptionsMenu(true);
         return view;
     }
 

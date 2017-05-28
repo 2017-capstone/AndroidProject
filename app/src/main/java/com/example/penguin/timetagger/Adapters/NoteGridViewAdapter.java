@@ -22,11 +22,11 @@ import com.example.penguin.timetagger.R;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -167,6 +167,7 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
                     else{
                         // 체크 표시
                         checkedItems.put(position, note.getNoteID());
+
                         cb.setChecked(true);
                     }
                 }
