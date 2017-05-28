@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.penguin.timetagger.Adapters.NoteGridViewAdapter;
 import com.example.penguin.timetagger.Database.DatabaseHelper;
 import com.example.penguin.timetagger.Fragments.NoteFragment;
 import com.example.penguin.timetagger.Fragments.SettingsFragment;
