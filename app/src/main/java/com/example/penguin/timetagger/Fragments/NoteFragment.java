@@ -40,6 +40,7 @@ public class NoteFragment extends Fragment {
     ActionBar toolbar;
     Note note;
     Uri imageUri;
+    ImageView imgv;
 
     public static NoteFragment newInstance(Note note){
         Bundle bundle = new Bundle();
@@ -54,6 +55,7 @@ public class NoteFragment extends Fragment {
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.content_note, container, false);
         Bundle bundle = this.getArguments();
+        imgv = (ImageView) view.findViewById(R.id.noteContentImage);
 
 
 
@@ -69,7 +71,10 @@ public class NoteFragment extends Fragment {
             noteBody = null;
         }
 
-        if(note.getPhoto() != null) imageUri = Uri.parse(note.getPhoto());
+        if(note.getPhoto() != null){
+            imageUri = Uri.parse(note.getPhoto());
+            imgv.setImageURI(imageUri);
+        }
         Log.d("ImageViewURITest", "LoadURI=>"+note.getPhoto());
 
 
@@ -152,6 +157,7 @@ public class NoteFragment extends Fragment {
             if(resultCode == Activity.RESULT_OK){
                 note.setPhotoDir(imageUri.toString());
                 Log.d("ImageViewURITest","CameraExitURI=>"+note.getPhoto());
+                imgv.setImageURI(imageUri);
             }
         }
     }
