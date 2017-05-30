@@ -62,7 +62,9 @@ public class DrawerActivity extends AppCompatActivity
                      timeTags.get(i).getID() << 4,
                      1/*Group1:singleTag*/,
                      timeTags.get(i).getTag())
-                    .setIcon(R.drawable.ic_class);
+                    .setIcon(R.drawable.ic_class)
+                    .setCheckable(true
+                    );
 
         navigationView.setNavigationItemSelectedListener(this);
     }
