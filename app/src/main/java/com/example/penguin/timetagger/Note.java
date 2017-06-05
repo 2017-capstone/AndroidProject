@@ -15,22 +15,27 @@ public class Note implements Parcelable {
     private String title;
     private String body;
     private String photo;
+    private int type; // 0 : text
+                      // 1 : photo
+                      // 2 : record
 
     public Note(){note_id = -1;}
-    public Note(String t, String b){note_id = -1; tag_id = 0; title = t; body = b;}
-    public Note(int ni, int ti, String t, String b){note_id=ni; tag_id=ti; title = t; body = b;}
-    public Note(int ni, int ti, String t, String b, String p){note_id=ni; tag_id=ti; title = t; body = b; photo = p;}
+    public Note(String t, String b){note_id = -1; tag_id = 0; title = t; body = b; type = 0;}
+    public Note(int ni, int ti, String t, String b){note_id=ni; tag_id=ti; title = t; body = b; type = 0;}
+    public Note(int ni, int ti, String t, String b, String p){note_id=ni; tag_id=ti; title = t; body = b; photo = p; type = 1;}
     public int getNoteID(){return note_id;}
     public int getTagID(){return tag_id;}
     public String getTitle(){return title;}
     public String getBody(){return body;}
     public String getPhoto(){return photo;}
+    public int getType(){return type;}
 
     public void setNoteID(int id){note_id = id;}
     public void setTagID(int id){tag_id = id;}
     public void setTitle(String t){title=t;}
     public void setBody(String b){body=b;}
     public void setPhotoDir(String p){photo=p;}
+    public void setType(int t){type=t;}
 
     public Note(Parcel in){
         readFromParcel(in);
@@ -40,6 +45,7 @@ public class Note implements Parcelable {
         title = n.getTitle();
         body = n.getBody();
         photo = n.getPhoto();
+        type = n.getType();
     }
     @Override
     public int describeContents(){
@@ -53,6 +59,7 @@ public class Note implements Parcelable {
         dest.writeString(title);
         dest.writeString(body);
         dest.writeString(photo);
+        dest.writeInt(type);
     }
 
     private void readFromParcel(Parcel in){
@@ -61,6 +68,7 @@ public class Note implements Parcelable {
         title = in.readString();
         body = in.readString();
         photo = in.readString();
+        type = in.readInt();
     }
 
     public  static final Creator<Note> CREATOR = new Creator<Note>() {
