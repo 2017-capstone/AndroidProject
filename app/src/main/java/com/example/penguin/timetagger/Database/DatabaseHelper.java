@@ -30,6 +30,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String  TIMETABLES_NAME = "times";
 	private static final String  TAGSTABLE_NAME = "tags";
 	private static final String  NOTESTABLE_NAME = "notes";
+	private static final String  ATTACHESTABLE_NAME = "attaches";
 
 	private DatabaseHelper(Context context){
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -46,8 +47,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		String query =  " INSERT INTO "     + NOTESTABLE_NAME   +
 						" values(NULL,"     + note.getTagID()   + ",'"
 										    + note.getTitle()   + "','"
-											+ note.getBody()	+ "','"
-											+ note.getPhoto()    + "');";
+											+ note.getBody()	+ "',"
+											+ note.getType()    + ");";
 
 		SQLiteDatabase db = instance.getWritableDatabase();
 		db.execSQL(query);
@@ -55,6 +56,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Cursor cursor = db.rawQuery("SELECT last_insert_rowid()", null);
 		note.setNoteID(cursor.getColumnIndex("NOTE_ID"));
 		cursor.close();
+
+		query = " INSERT INTO "     + ATTACHESTABLE_NAME   +
+				" values(NULL, "	+ note.getNoteID() + ",'"
+									+ note.getPhoto()   + "');";
+
+		db = instance.getWritableDatabase();
+		db.execSQL(query);
 		return note;
 	}
 
@@ -64,10 +72,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						" SET TAG_ID = "    + note.getTagID()   + "," +
 						" TITLE = '"        + note.getTitle()   + "'," +
 						" BODY = '"         + note.getBody()    + "'," +
-						" PHOTO = '"  		 + note.getPhoto() + "'" +
+						" TYPE = "  		+ note.getType()	+
 						" WHERE NOTE_ID = " + note.getNoteID()  + ";";
 
 		SQLiteDatabase db = instance.getWritableDatabase();
+		db.execSQL(query);
+
+		query = " UPDATE "			+ ATTACHESTABLE_NAME	+
+				" SET DATA = '"		+ note.getPhoto()		+ "'" +
+				" WHERE NOTE_ID = " + note.getNoteID()		+ ";";
+
+		db = instance.getWritableDatabase();
 		db.execSQL(query);
 	}
 
@@ -78,11 +93,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db = instance.getReadableDatabase();
 		Cursor cursor = db.rawQuery(query, null);
 
+		SQLiteDatabase datadb = instance.getReadableDatabase();
+		Cursor datacursor;
+
 		List<Note> notes = new LinkedList<>();
 		if(cursor.moveToFirst()){
 			while(!cursor.isAfterLast()) {
-				Note note = new Note(cursor.getInt(0), cursor.getInt(1),
-						cursor.getString(2), cursor.getString(3), cursor.getString(4));
+				Note note;
+				query = " SELECT DATA FROM "	+ ATTACHESTABLE_NAME	+
+						" WHERE NOTE_ID = "		+ cursor.getInt(0)		+ ";";
+				datacursor = datadb.rawQuery(query, null);
+				if(datacursor.moveToFirst()) {
+					note = new Note(cursor.getInt(0), cursor.getInt(1),
+							cursor.getString(2), cursor.getString(3), datacursor.getString(0));
+				}
+				else{
+					note = new Note(cursor.getInt(0), cursor.getInt(1),
+							cursor.getString(2), cursor.getString(3));
+				}
 				notes.add(note);
 				cursor.moveToNext();
 			}
@@ -90,6 +118,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		cursor.close();
 		return notes;
 	}
+
 	public static synchronized List<Note> selectNotes(int tag_id){
 		String query;
 		query = " SELECT * FROM "   + NOTESTABLE_NAME   +
@@ -97,12 +126,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		SQLiteDatabase db = instance.getReadableDatabase();
 		Cursor cursor = db.rawQuery(query, null);
+		SQLiteDatabase datadb = instance.getReadableDatabase();
+		Cursor datacursor;
 
 		List<Note> notes = new LinkedList<>();
 		if(cursor.moveToFirst()){
 			while(!cursor.isAfterLast()) {
-				Note note = new Note(cursor.getInt(0), cursor.getInt(1),
-									 cursor.getString(2), cursor.getString(3), cursor.getString(4));
+				Note note;
+				query = " SELECT DATA FROM "	+ ATTACHESTABLE_NAME	+
+						" WHERE NOTE_ID = "		+ cursor.getInt(0)		+ ";";
+				datacursor = datadb.rawQuery(query, null);
+				if(datacursor.moveToFirst()) {
+					note = new Note(cursor.getInt(0), cursor.getInt(1),
+							cursor.getString(2), cursor.getString(3), datacursor.getString(0));
+				}
+				else{
+					note = new Note(cursor.getInt(0), cursor.getInt(1),
+							cursor.getString(2), cursor.getString(3));
+				}
 				notes.add(note);
 				cursor.moveToNext();
 			}
@@ -110,16 +151,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		cursor.close();
 		return notes;
 	}
+
 	public static synchronized Note selectNote(int note_id){
 		/* TODO: TAG is null 에 대해 고민 할 것 */
 		String query =  " SELECT * FROM "   + NOTESTABLE_NAME   +
 						" WHERE NOTE_ID = " + note_id           + ";";
 		SQLiteDatabase db = instance.getReadableDatabase();
+		SQLiteDatabase datadb = instance.getReadableDatabase();
 		Cursor cursor = db.rawQuery(query, null);
+		Cursor datacursor;
 
 		if(cursor.moveToFirst()){
-			Note note = new Note(cursor.getInt(0), cursor.getInt(1),
-								 cursor.getString(2), cursor.getString(3), cursor.getString(4));
+			Note note;
+			query = " SELECT DATA FROM " + ATTACHESTABLE_NAME	+
+					" WHERE NOTE_ID = "  + note_id				+ ";";
+			datacursor = datadb.rawQuery(query, null);
+			if(datacursor.moveToFirst()) {
+				datacursor.moveToFirst();
+				note = new Note(cursor.getInt(0), cursor.getInt(1),
+						cursor.getString(2), cursor.getString(3), datacursor.getString(0));
+			}
+			else {
+				note = new Note(cursor.getInt(0), cursor.getInt(1),
+						cursor.getString(2), cursor.getString(3));
+			}
+			datacursor.close();
 			return note;
 		}
 		cursor.close();
@@ -132,6 +188,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		SQLiteDatabase db = instance.getWritableDatabase();
 		db.execSQL(query);
+
+		query = " DELETE FROM "		+ ATTACHESTABLE_NAME	+
+				" WHERE NOTE_ID = " + note_id				+ ";";
+		db = instance.getWritableDatabase();
+		db.execSQL(query);
 	}
 
 	public static synchronized void deleteNotes(List<Integer> note_ids){
@@ -140,6 +201,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		for(int i = 0; i < note_ids.size(); i++) {
 			query = " DELETE FROM " 	+ NOTESTABLE_NAME +
+					" WHERE NOTE_ID = " + note_ids.get(i) + ";";
+
+			db = instance.getWritableDatabase();
+			db.execSQL(query);
+
+			query = " DELETE FROM " 	+ ATTACHESTABLE_NAME +
 					" WHERE NOTE_ID = " + note_ids.get(i) + ";";
 
 			db = instance.getWritableDatabase();
@@ -256,15 +323,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						"TAG_ID INTEGER, " +
 						"TITLE TEXT, " +
 						"BODY TEXT, " +
-						"PHOTO TEXT, " +
+						"TYPE INTEGER, " +
 						"FOREIGN KEY(TAG_ID) REFERENCES tags(TAG_ID) ); ";
 		/* TODO: 사진, 음성, 그림 등을 담을 수 있는 데이터베이스를 생성할 것 */
-		// String CREATE_ATTACHMENTS = ...
+		String CREATE_ATTACHMENTS = "CREATE TABLE attaches(" +
+						"ATTACH_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+						"NOTE_ID INTEGER, " +
+						"DATA TEXT, " +
+						"FOREIGN KEY(NOTE_ID) REFERENCES notes(NOTE_ID) ); ";
 		String INITIALIZE_DATABASE = "INSERT INTO " + TAGSTABLE_NAME +
 				" values(0, 'No Tag', null, null);";
 		db.execSQL(CREATE_TIMETABLES);
 		db.execSQL(CREATE_TAGS);
 		db.execSQL(CREATE_NOTES);
+		db.execSQL(CREATE_ATTACHMENTS);
 		db.execSQL(INITIALIZE_DATABASE);
 	}
 
