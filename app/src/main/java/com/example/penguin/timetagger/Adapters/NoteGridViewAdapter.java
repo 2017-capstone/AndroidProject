@@ -1,6 +1,8 @@
 package com.example.penguin.timetagger.Adapters;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.Image;
 import android.net.Uri;
@@ -127,6 +129,8 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
 
         // 이미지 보여주기
         if(noteItems.get(position).getPhoto() != null){
+            // 권한 받아오기
+            //...
             holder.img.setImageURI(Uri.parse(noteItems.get(position).getPhoto()));
         }
 
