@@ -31,6 +31,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String  TAGSTABLE_NAME = "tags";
 	private static final String  NOTESTABLE_NAME = "notes";
 	private static final String  ATTACHESTABLE_NAME = "attaches";
+	private static final String  ALARMSTABLE_NAME = "alarms";
 
 	private DatabaseHelper(Context context){
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -49,6 +50,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 										    + note.getTitle()   + "','"
 											+ note.getBody()	+ "',"
 											+ note.getType()    + ");";
+
+        if(note.getAlarm() != new Timestamp(0L)){
+
+        }
 
 		SQLiteDatabase db = instance.getWritableDatabase();
 		db.execSQL(query);
@@ -242,6 +247,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return;
 	}
 
+    public static synchronized void updateTag(TimeTag tag){
+        String query =  " UPDATE "  + TAGSTABLE_NAME    +
+                " SET TAG = '"      + tag.getTag()      + "',"  +
+                " START = "         + tag.getStart()    + ","   +
+                " END = "           + tag.getEnd()      +
+                " WHERE TAG_ID = "  + tag.getID()       + ";";
+
+        SQLiteDatabase db = instance.getWritableDatabase();
+        db.execSQL(query);
+
+        ListIterator<TimeTable> iter = tag.getTimes().listIterator();
+        while(iter.hasNext()){
+            TimeTable t = iter.next();
+            query = " UPDATE "          + TIMETABLES_NAME           +
+                    " SET TIME_ID = "   + t.getTimeID()             + ","   +
+                    " START = "         + t.getStart().getTime()    + ","   +
+                    " END = "           + t.getEnd().getTime()      + ","   +
+                    " WHERE TAG_ID = "  + t.getTagID()              + ";";
+            db.execSQL(query);
+        }
+
+        return;
+    }
+
 	public static synchronized List<TimeTag> selectAllTags(){
 		String query;
 		query = " SELECT * FROM "   + TAGSTABLE_NAME    +
@@ -331,12 +360,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						"NOTE_ID INTEGER, " +
 						"DATA TEXT, " +
 						"FOREIGN KEY(NOTE_ID) REFERENCES notes(NOTE_ID) ); ";
+		String CREATE_ALARMS = "CREATE TABLE alarms(" +
+						"ALARM_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+						"NOTE_ID INTEGER, " +
+						"TIME TIMESTAMP, " +
+						"FOREIGN KEY(NOTE_ID) REFERENCES notes(NOTE_ID) ); ";
 		String INITIALIZE_DATABASE = "INSERT INTO " + TAGSTABLE_NAME +
 				" values(0, 'No Tag', null, null);";
 		db.execSQL(CREATE_TIMETABLES);
 		db.execSQL(CREATE_TAGS);
 		db.execSQL(CREATE_NOTES);
 		db.execSQL(CREATE_ATTACHMENTS);
+		db.execSQL(CREATE_ALARMS);
 		db.execSQL(INITIALIZE_DATABASE);
 	}
 
