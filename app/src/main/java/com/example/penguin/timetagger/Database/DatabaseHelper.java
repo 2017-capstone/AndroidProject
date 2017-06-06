@@ -51,10 +51,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 											+ note.getBody()	+ "',"
 											+ note.getType()    + ");";
 
-        if(note.getAlarm() != new Timestamp(0L)){
-
-        }
-
 		SQLiteDatabase db = instance.getWritableDatabase();
 		db.execSQL(query);
 
@@ -68,7 +64,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		db = instance.getWritableDatabase();
 		db.execSQL(query);
-		return note;
+		/*
+        if(note.getAlarm() != new Timestamp(0L)){
+            query = "INSERT INTO "  + ALARMSTABLE_NAME          +
+                    "values(NULL,"  + note.getNoteID()          + ","   +
+                                    + note.getAlarm().getTime() + ");";
+            db = instance.getWritableDatabase();
+            db.execSQL(query);
+        }
+        */
+        return note;
 	}
 
 	public static synchronized void updateNote(Note note){
@@ -241,6 +246,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 									+ t.getTagID()              + ","
 									+ t.getStart().getTime()    + ","
 									+ t.getEnd().getTime()      + ");";
+            db = instance.getWritableDatabase();
             db.execSQL(query);
         }
 
@@ -248,11 +254,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
     public static synchronized void updateTag(TimeTag tag){
-        String query =  " UPDATE "  + TAGSTABLE_NAME    +
-                " SET TAG = '"      + tag.getTag()      + "',"  +
-                " START = "         + tag.getStart()    + ","   +
-                " END = "           + tag.getEnd()      +
-                " WHERE TAG_ID = "  + tag.getID()       + ";";
+        String query =  " UPDATE "          + TAGSTABLE_NAME 	   		+
+                		" SET TAG = '"      + tag.getTag()      		+ "',"  +
+            		    " LOOP_START = "    + tag.getStart().getTime()	+ ","   +
+                		" LOOP_END = "      + tag.getEnd().getTime()	+
+                		" WHERE TAG_ID = "  + tag.getID()       		+ ";";
 
         SQLiteDatabase db = instance.getWritableDatabase();
         db.execSQL(query);
@@ -265,6 +271,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     " START = "         + t.getStart().getTime()    + ","   +
                     " END = "           + t.getEnd().getTime()      + ","   +
                     " WHERE TAG_ID = "  + t.getTagID()              + ";";
+            db = instance.getWritableDatabase();
             db.execSQL(query);
         }
 
