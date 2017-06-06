@@ -20,22 +20,22 @@ public class Note implements Parcelable {
     private int type; // 0 : text
                       // 1 : photo
                       // 2 : record
-    private Timestamp alarm;
+    //private Timestamp alarm;
 
-    public Note(){note_id = -1; alarm.setTime(0L);}
-    public Note(String t, String b){note_id = -1; tag_id = 0; title = t; body = b; type = 0; alarm.setTime(0L);}
-    public Note(String t, String b, Timestamp a){note_id = -1; tag_id = 0; title = t; body = b; type = 0; alarm = a;}
-    public Note(int ni, int ti, String t, String b){note_id=ni; tag_id=ti; title = t; body = b; type = 0; alarm.setTime(0L);}
-    public Note(int ni, int ti, String t, String b, Timestamp a){note_id=ni; tag_id=ti; title = t; body = b; type = 0; alarm = a;}
-    public Note(int ni, int ti, String t, String b, String p){note_id=ni; tag_id=ti; title = t; body = b; photo = p; type = 1; alarm.setTime(0L);}
-    public Note(int ni, int ti, String t, String b, String p, Timestamp a){note_id=ni; tag_id=ti; title = t; body = b; photo = p; type = 1; alarm = a;}
+    public Note(){note_id = -1; /*alarm.setTime(0L);*/}
+    public Note(String t, String b){note_id = -1; tag_id = 0; title = t; body = b; type = 0; /*alarm.setTime(0L);*/}
+    //public Note(String t, String b, Timestamp a){note_id = -1; tag_id = 0; title = t; body = b; type = 0; alarm = a;}
+    public Note(int ni, int ti, String t, String b){note_id=ni; tag_id=ti; title = t; body = b; type = 0; /*alarm.setTime(0L);*/}
+    //public Note(int ni, int ti, String t, String b, Timestamp a){note_id=ni; tag_id=ti; title = t; body = b; type = 0; alarm = a;}
+    public Note(int ni, int ti, String t, String b, String p){note_id=ni; tag_id=ti; title = t; body = b; photo = p; type = 1; /*alarm.setTime(0L);*/}
+    //public Note(int ni, int ti, String t, String b, String p, Timestamp a){note_id=ni; tag_id=ti; title = t; body = b; photo = p; type = 1; alarm = a;}
     public int getNoteID(){return note_id;}
     public int getTagID(){return tag_id;}
     public String getTitle(){return title;}
     public String getBody(){return body;}
     public String getPhoto(){return photo;}
     public int getType(){return type;}
-    public Timestamp getAlarm(){return alarm;}
+    //public Timestamp getAlarm(){return alarm;}
 
     public void setNoteID(int id){note_id = id;}
     public void setTagID(int id){tag_id = id;}
@@ -43,7 +43,7 @@ public class Note implements Parcelable {
     public void setBody(String b){body=b;}
     public void setPhotoDir(String p){photo=p;}
     public void setType(int t){type=t;}
-    public void setAlarm(Timestamp a){alarm = a;}
+    //public void setAlarm(Timestamp a){alarm = a;}
 
     public Note(Parcel in){
         readFromParcel(in);
@@ -54,7 +54,7 @@ public class Note implements Parcelable {
         body = n.getBody();
         photo = n.getPhoto();
         type = n.getType();
-        alarm = n.getAlarm();
+        //alarm = n.getAlarm();
     }
     @Override
     public int describeContents(){
@@ -69,7 +69,7 @@ public class Note implements Parcelable {
         dest.writeString(body);
         dest.writeString(photo);
         dest.writeInt(type);
-        dest.writeLong(alarm.getTime());
+        //dest.writeLong(alarm.getTime());
     }
 
     private void readFromParcel(Parcel in){
@@ -79,7 +79,7 @@ public class Note implements Parcelable {
         body = in.readString();
         photo = in.readString();
         type = in.readInt();
-        alarm.setTime(in.readLong());
+        //alarm.setTime(in.readLong());
     }
 
     public  static final Creator<Note> CREATOR = new Creator<Note>() {
