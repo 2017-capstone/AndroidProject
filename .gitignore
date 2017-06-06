@@ -17,7 +17,7 @@
 *.apk
 *.ap_
 /*/build/
-
+/*/build/intermediates/dex-cache/cache.xml
 
 # Gradle 자동 생성 파일
 .gradle
