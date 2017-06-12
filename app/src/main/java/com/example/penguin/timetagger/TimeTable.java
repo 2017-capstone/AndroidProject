@@ -1,18 +1,21 @@
 package com.example.penguin.timetagger;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by penguin on 17. 5. 20.
  */
 
 public class TimeTable{
+	public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
 	private int time_id;
 	private int tag_id;
 	private Timestamp start;
 	private Timestamp end;
 
-	public TimeTable(){}
+	public TimeTable(){this.time_id=-1;}
 	public TimeTable(Timestamp t1, Timestamp t2){
 		this.time_id = -1;
 		this.tag_id = -1;
