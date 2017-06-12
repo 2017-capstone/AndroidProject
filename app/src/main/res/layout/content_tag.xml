@@ -33,7 +33,8 @@
         android:inputType="date"
         android:paddingBottom="16dp"
         android:paddingTop="16dp"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:focusable="false"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -42,18 +43,22 @@
         android:textSize="12sp"
         android:text="End"/>
 
-    <FrameLayout
-        android:id="@+id/frame_timetable"
+    <EditText
+        android:id="@+id/tagEnd"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:inputType="date"
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp"
+        android:textSize="16sp"
+        android:focusable="false" />
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <EditText
-            android:id="@+id/tagEnd"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/timeItemRV"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:inputType="date"
-            android:paddingBottom="16dp"
-            android:paddingTop="16dp"
-            android:textSize="16sp" />
-    </FrameLayout>
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
 </LinearLayout>
