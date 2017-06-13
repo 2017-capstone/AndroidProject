@@ -1,6 +1,7 @@
 package com.example.penguin.timetagger.Fragments;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.example.penguin.timetagger.Adapters.TagListAdapter;
 import com.example.penguin.timetagger.Database.DatabaseHelper;
+import com.example.penguin.timetagger.Note;
 import com.example.penguin.timetagger.TimeTag;
 import com.example.penguin.timetagger.R;
 
@@ -35,6 +37,14 @@ public class TagListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.content_tag_list, container, false);
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        // 새로운 노트 작성
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                movetoTagFragment(new TimeTag());
+            }
+        });
 
         DatabaseHelper.getInstance(getActivity());
 
