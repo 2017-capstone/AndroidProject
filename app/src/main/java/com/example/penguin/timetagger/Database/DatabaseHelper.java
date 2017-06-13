@@ -245,7 +245,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					" values("      + t.getTimeID()              + ","
 									+ t.getTagID()              + ","
 									+ t.getStart().getTime()    + ","
-									+ t.getEnd().getTime()      + ");";
+									+ t.getEnd().getTime()      + ","
+									+ t.getWeekly() 			+ ");";
             db = instance.getWritableDatabase();
             db.execSQL(query);
         }
@@ -270,6 +271,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     " SET TIME_ID = "   + t.getTimeID()             + ","   +
                     " START = "         + t.getStart().getTime()    + ","   +
                     " END = "           + t.getEnd().getTime()      + ","   +
+					" WEEK = "			+ t.getWeekly()				+ ","	+
                     " WHERE TAG_ID = "  + t.getTagID()              + ";";
             db = instance.getWritableDatabase();
             db.execSQL(query);
@@ -353,6 +355,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						"TAG_ID INTEGER NOT NULL, " +
 						"START TIMESTAMP, " +
 						"END TIMESTAMP, " +
+						"WEEK BYTE, " +
 						"FOREIGN KEY(TAG_ID) REFERENCES tags(TAG_ID) ); ";
 		String CREATE_NOTES = "CREATE TABLE notes(" +
 						"NOTE_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
