@@ -37,15 +37,14 @@ public class AlarmListFragment {
 
     private Menu menu;
     private Boolean isEditTitle = false;
-    public static NoteListFragment newInstance(TimeTag timeTag){
+    public static AlarmListFragment newInstance(TimeTag timeTag){
         Bundle bundle = new Bundle();
         bundle.putParcelable("TIMETAG", timeTag);
-        NoteListFragment fragment = new NoteListFragment();
-        fragment.setArguments(bundle);
+        AlarmListFragment fragment = new AlarmListFragment();
+        //fragment.setArguments(bundle);
         return fragment;
     }
 
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.content_note_list, container, false);
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
@@ -102,45 +101,6 @@ public class AlarmListFragment {
             System.out.println(e);}
         setHasOptionsMenu(true);
         return view;
-    }
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.listview_menu, menu);
-        this.menu = menu;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_save) {
-
-            return true;
-        }
-        else if (id == R.id.action_delete_note) {
-            nia.deleteCheckedNotes();
-
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onResume(){
-        super.onResume();
-        getActivity().invalidateOptionsMenu();
-    }
-
-    private void movetoNoteFragment(Note note){
-        NoteFragment fragment = NoteFragment.newInstance(note);
-
-        getFragmentManager()
-                .beginTransaction()
-                .replace(R.id.frame_content, fragment)
-                .addToBackStack(null)
-                .commit();
     }
 }
 
