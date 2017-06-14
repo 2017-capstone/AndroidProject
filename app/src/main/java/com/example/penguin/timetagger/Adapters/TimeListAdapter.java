@@ -40,7 +40,8 @@ public class TimeListAdapter extends RecyclerView.Adapter<TimeListAdapter.TimeLi
 		TextView v_repeat;
 		TextView v_begin;
 		TextView v_end;
-		TextView v_void;
+		LinearLayout v_reserved;
+		LinearLayout v_void;
 		CardView cv;
 
 		public TimeListViewHolder(View v){
@@ -48,8 +49,9 @@ public class TimeListAdapter extends RecyclerView.Adapter<TimeListAdapter.TimeLi
 			v_repeat = (TextView) v.findViewById(R.id.timeRepeat);
 			v_begin = (TextView) v.findViewById(R.id.timeBegin);
 			v_end = (TextView) v.findViewById(R.id.timeEnd);
-			v_void = (TextView) v.findViewById(R.id.timeVoid);
-			cv = (CardView)v.findViewById(R.id.timeItemRV);
+			v_reserved = (LinearLayout)v.findViewById(R.id.timeReserved);
+			v_void = (LinearLayout)v.findViewById(R.id.timeVoid);
+			cv = (CardView)v.findViewById(R.id.timeItem);
 		}
 	}
 
@@ -74,35 +76,26 @@ public class TimeListAdapter extends RecyclerView.Adapter<TimeListAdapter.TimeLi
 	public void onBindViewHolder(final TimeListViewHolder holder, final int position) {
 		TimeTable duration = timeItems.get(position);
         // TODO: Database에 반복 주기 추가해야 함
-		/*if(duration.getTimeID() == -1){
+		if(duration.getTimeID() == -1){
 
 			LinearLayout.LayoutParams loparams;
-			loparams = (LinearLayout.LayoutParams) holder.v_repeat.getLayoutParams();
+			loparams = (LinearLayout.LayoutParams) holder.v_reserved.getLayoutParams();
 			loparams.weight = 0;
 			loparams.width = 0;
+			loparams.height = 0;
 			holder.v_repeat.setLayoutParams(loparams);
-
-			loparams = (LinearLayout.LayoutParams) holder.v_begin.getLayoutParams();
-			loparams.weight = 0;
-			loparams.width = 0;
-			holder.v_begin.setLayoutParams(loparams);
-
-			loparams = (LinearLayout.LayoutParams) holder.v_end.getLayoutParams();
-			loparams.weight = 0;
-			loparams.width = 0;
-			holder.v_end.setLayoutParams(loparams);
 
 			loparams = (LinearLayout.LayoutParams) holder.v_void.getLayoutParams();
 			loparams.weight = 1;
+			loparams.width = LinearLayout.LayoutParams.MATCH_PARENT;
+			loparams.height = LinearLayout.LayoutParams.WRAP_CONTENT;
 			holder.v_void.setLayoutParams(loparams);
-
-
 		}else {
 			holder.v_repeat.setText("매일");
 			holder.v_begin.setText(sdf.format(duration.getStart()));
 			holder.v_end.setText(sdf.format(duration.getEnd()));
 		}
-		*/
+
         /* 클릭 함수 */
 		holder.cv.setOnClickListener(new View.OnClickListener(){
 			@Override
@@ -112,9 +105,9 @@ public class TimeListAdapter extends RecyclerView.Adapter<TimeListAdapter.TimeLi
 					case R.id.timeRepeat:
 						// TODO: Database 반복 추가후 사용
 						break;
-					case R.id.timeBeginFrame:
-						curEdit = (EditText)v.findViewById(R.id.timeBegin);
-						int y=0, m=0, d=0;
+					case R.id.timeBeginFrame: {
+						curEdit = (EditText) v.findViewById(R.id.timeBegin);
+						int y = 0, m = 0, d = 0;
 						try {
 							Calendar cal = Calendar.getInstance();
 							cal.setTime(sdf.parse(duration1.getStart().toString()));
@@ -128,9 +121,38 @@ public class TimeListAdapter extends RecyclerView.Adapter<TimeListAdapter.TimeLi
 								context, TimeListAdapter.this, y, m, d
 						);
 						dialog.show();
-						break;
-					case R.id.timeEndFrame:
-						break;
+					}break;
+					case R.id.timeEndFrame: {
+						curEdit = (EditText) v.findViewById(R.id.timeBegin);
+						int y = 0, m = 0, d = 0;
+						try {
+							Calendar cal = Calendar.getInstance();
+							cal.setTime(sdf.parse(duration1.getStart().toString()));
+							y = cal.get(Calendar.YEAR);
+							m = cal.get(Calendar.MONTH);
+							d = cal.get(Calendar.DAY_OF_MONTH);
+						} catch (ParseException e) {
+							e.printStackTrace();
+						}
+						DatePickerDialog dialog = new DatePickerDialog(
+								context, TimeListAdapter.this, y, m, d
+						);
+						dialog.show();
+					}break;
+					case R.id.newTime: {
+						LinearLayout.LayoutParams loparams;
+						loparams = (LinearLayout.LayoutParams) holder.v_void.getLayoutParams();
+						loparams.weight = 0;
+						loparams.width = 0;
+						loparams.height = 0;
+						holder.v_void.setLayoutParams(loparams);
+
+						loparams = (LinearLayout.LayoutParams) holder.v_reserved.getLayoutParams();
+						loparams.weight = 1;
+						loparams.width = LinearLayout.LayoutParams.MATCH_PARENT;
+						loparams.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+						holder.v_repeat.setLayoutParams(loparams);
+					}break;
 				}
 			}
 		});
