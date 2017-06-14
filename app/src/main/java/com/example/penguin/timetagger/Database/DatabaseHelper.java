@@ -61,10 +61,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		note.setNoteID(cursor.getInt(0));
 		cursor.close();
 
-		// TYPE 1: photo 노트
+		// Attachment
 		insertAttaches(note.getAttaches());
-
-
+    // Alarm
 		insertAlarms(note.getAlarms());
 		return note;
 	}
@@ -288,6 +287,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			db.execSQL(query);
 		}
 	}
+
+    public static synchronized void updateTag(TimeTag tag){
+        String query =  " UPDATE "      + TAGSTABLE_NAME 	   		+
+                		" SET TAG = '"      + tag.getTag()      		+ "',"  +
+            		    " LOOP_START = "    + tag.getStart().getTime()	+ ","   +
+                		" LOOP_END = "      + tag.getEnd().getTime()	+
+                		" WHERE TAG_ID = "  + tag.getID()       		+ ";";
+
+        SQLiteDatabase db = instance.getWritableDatabase();
+        db.execSQL(query);
+
+        ListIterator<TimeTable> iter = tag.getTimes().listIterator();
+        while(iter.hasNext()){
+            TimeTable t = iter.next();
+            query = " UPDATE "          + TIMETABLES_NAME           +
+                    " SET TIME_ID = "   + t.getTimeID()             + ","   +
+                    " START = "         + t.getStart().getTime()    + ","   +
+                    " END = "           + t.getEnd().getTime()      + ","   +
+					" WEEK = "			+ t.getWeekly()				+ ","	+
+                    " WHERE TAG_ID = "  + t.getTagID()              + ";";
+            db = instance.getWritableDatabase();
+            db.execSQL(query);
+        }
+
+        return;
+    }
+
 	public static synchronized List<TimeTag> selectAllTags(){
 		String query;
 		query = " SELECT * FROM "   + TAGSTABLE_NAME    +
@@ -602,6 +628,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						"NOTE_ID INTEGER, " +
 						"DATA TEXT, " +
 						"FOREIGN KEY(NOTE_ID) REFERENCES notes(NOTE_ID) ); ";
+
 		String CREATE_ALARM = "CREATE TABLE alarms(" +
 						"ALARM_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
 						"NOTE_ID INTEGER, " +
