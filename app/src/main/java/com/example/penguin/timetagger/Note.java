@@ -6,8 +6,6 @@ import android.os.Parcelable;
 import java.util.LinkedList;
 import java.util.List;
 
-import java.sql.Timestamp;
-
 /**
  * Created by penguin on 17. 4. 30.
  */
