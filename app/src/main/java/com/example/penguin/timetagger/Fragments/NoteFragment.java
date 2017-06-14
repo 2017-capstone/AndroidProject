@@ -1,9 +1,7 @@
 package com.example.penguin.timetagger.Fragments;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 //import android.app.Fragment;
@@ -13,7 +11,6 @@ import android.support.annotation.*;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -25,9 +22,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.penguin.timetagger.Adapters.NoteGridViewAdapter;
+import com.example.penguin.timetagger.Attachment;
 import com.example.penguin.timetagger.Database.*;
 import com.example.penguin.timetagger.Note;
 import com.example.penguin.timetagger.R;
@@ -35,6 +31,8 @@ import com.example.penguin.timetagger.R;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 public class NoteFragment extends Fragment {
     ActionBar toolbar;
@@ -57,8 +55,6 @@ public class NoteFragment extends Fragment {
         Bundle bundle = this.getArguments();
         imgv = (ImageView) view.findViewById(R.id.noteContentImage);
 
-
-
         String noteTitle;
         String noteBody;
 
@@ -71,11 +67,14 @@ public class NoteFragment extends Fragment {
             noteBody = null;
         }
 
-        if(note.getPhoto() != null){
-            imageUri = Uri.parse(note.getPhoto());
-            imgv.setImageURI(imageUri);
+        if(note.getAttaches() != null){
+            List<Attachment> attaches = note.getAttaches();
+            if(attaches.size() > 0) {
+                imageUri = Uri.parse(attaches.get(0).getAttach());
+                imgv.setImageURI(imageUri);
+            }
         }
-        Log.d("ImageViewURITest", "LoadURI=>"+note.getPhoto());
+        Log.d("ImageViewURITest", "LoadURI=>"+note.getAttaches());
 
 
         EditText etNoteTitle = (EditText)(getActivity()).findViewById(R.id.toolbar_et);
@@ -126,7 +125,12 @@ public class NoteFragment extends Fragment {
 	        note.setTitle(noteTitle);
             note.setBody(noteBody);
 
-	        if(imageUri != null) note.setPhotoDir(imageUri.toString());
+	        if(imageUri != null){
+                List<Attachment> attaches = new LinkedList<>();
+                attaches.add(new Attachment(note.getNoteID(), imageUri.toString()));
+                note.setAttaches(attaches);
+                note.setType(1);
+            }
 
             if(note.getNoteID() == -1)
                 DatabaseHelper.insertNote(note);
@@ -155,8 +159,10 @@ public class NoteFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == 1){
             if(resultCode == Activity.RESULT_OK){
-                note.setPhotoDir(imageUri.toString());
-                Log.d("ImageViewURITest","CameraExitURI=>"+note.getPhoto());
+                List<Attachment> attaches = new LinkedList<>();
+                attaches.add(new Attachment(note.getNoteID(), imageUri.toString()));
+                note.setAttaches(attaches);
+                Log.d("ImageViewURITest","CameraExitURI=>"+note.getAttaches());
                 imgv.setImageURI(imageUri);
             }
         }

@@ -10,6 +10,7 @@ import android.os.Parcelable;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 public class TimeTag implements Parcelable {
@@ -20,12 +21,12 @@ public class TimeTag implements Parcelable {
 	private Timestamp end;
 	private List<TimeTable> times;
 
-	public TimeTag(){}
-	public TimeTag(String t){tag = t;}
-	public TimeTag(String t, Timestamp t1, Timestamp t2){tag = t; start = t1; end = t2;}
+	public TimeTag(){times = new LinkedList<>();}
+	public TimeTag(String t){tag = t;times = new LinkedList<>();}
+	public TimeTag(String t, Timestamp t1, Timestamp t2){tag = t; start = t1; end = t2;times = new LinkedList<>();}
 	public TimeTag(String t, Timestamp t1, Timestamp t2, List<TimeTable> tt){tag=t;start=t1;end=t2;times=tt;}
-	public TimeTag(int i, String t, Timestamp t1, Timestamp t2){tag_id=i; tag=t;start=t1;end=t2;}
-	public TimeTag(int i, String t, Long t1, Long t2){tag_id=i; tag=t; start=new Timestamp(t1); end=new Timestamp(t2);}
+	public TimeTag(int i, String t, Timestamp t1, Timestamp t2){tag_id=i; tag=t;start=t1;end=t2;times = new LinkedList<>();}
+	public TimeTag(int i, String t, Long t1, Long t2){tag_id=i; tag=t; start=new Timestamp(t1); end=new Timestamp(t2);times = new LinkedList<>();}
 	public int getID(){return tag_id;}
 	public String getTag(){return tag;}
 	public Timestamp getStart(){return start;}
@@ -60,6 +61,9 @@ public class TimeTag implements Parcelable {
 		dest.writeString(tag);
 		dest.writeLong(start.getTime());
 		dest.writeLong(end.getTime());
+		dest.writeInt(times.size());
+		for(int i=0; i<times.size(); i++)
+			dest.writeParcelable(times.get(i), flags);
 	}
 
 	private void readFromParcel(Parcel in){
@@ -67,6 +71,11 @@ public class TimeTag implements Parcelable {
 		tag = in.readString();
 		start.setTime(in.readLong());
 		end.setTime(in.readLong());
+		int size = in.readInt();
+		for(int i=0; i<size; i++){
+			TimeTable t = in.readParcelable(TimeTable.class.getClassLoader());
+			times.add(t);
+		}
 	}
 
 	public  static final Creator<TimeTag> CREATOR = new Creator<TimeTag>() {

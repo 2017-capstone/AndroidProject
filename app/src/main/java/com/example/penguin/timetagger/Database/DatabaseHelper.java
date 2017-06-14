@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.penguin.timetagger.Alarm;
+import com.example.penguin.timetagger.Attachment;
 import com.example.penguin.timetagger.Note;
 import com.example.penguin.timetagger.TimeTable;
 import com.example.penguin.timetagger.TimeTag;
@@ -12,11 +14,10 @@ import com.example.penguin.timetagger.TimeTag;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.jar.Pack200;
 
 /**
  * Created by penguin on 17. 5. 15.
@@ -31,7 +32,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String  TAGSTABLE_NAME = "tags";
 	private static final String  NOTESTABLE_NAME = "notes";
 	private static final String  ATTACHESTABLE_NAME = "attaches";
-	private static final String  ALARMSTABLE_NAME = "alarms";
+	private static final String ALARMTABLE_NAME = "alarms";
 
 	private DatabaseHelper(Context context){
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -43,6 +44,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			instance = new DatabaseHelper(context);
 		return instance;
 	}
+
 	/* NOTES */
 	public static synchronized Note insertNote(Note note){
 		String query =  " INSERT INTO "     + NOTESTABLE_NAME   +
@@ -54,29 +56,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db = instance.getWritableDatabase();
 		db.execSQL(query);
 
-		Cursor cursor = db.rawQuery("SELECT last_insert_rowid()", null);
-		note.setNoteID(cursor.getColumnIndex("NOTE_ID"));
+		Cursor cursor = db.rawQuery("SELECT MAX(NOTE_ID) from notes", null);
+		cursor.moveToFirst();
+		note.setNoteID(cursor.getInt(0));
 		cursor.close();
 
-		query = " INSERT INTO "     + ATTACHESTABLE_NAME   +
-				" values(NULL, "	+ note.getNoteID() + ",'"
-									+ note.getPhoto()   + "');";
-
-		db = instance.getWritableDatabase();
-		db.execSQL(query);
-		/*
-        if(note.getAlarm() != new Timestamp(0L)){
-            query = "INSERT INTO "  + ALARMSTABLE_NAME          +
-                    "values(NULL,"  + note.getNoteID()          + ","   +
-                                    + note.getAlarm().getTime() + ");";
-            db = instance.getWritableDatabase();
-            db.execSQL(query);
-        }
-        */
-        return note;
+		// Attachment
+		insertAttaches(note.getAttaches());
+    // Alarm
+		insertAlarms(note.getAlarms());
+		return note;
 	}
-
 	public static synchronized void updateNote(Note note){
+		// noteID == 1 일땐 새로운 노트이므로, 업데이트 할 수 없음
 		if(note.getNoteID() == -1) return;
 		String query =  " UPDATE "          + NOTESTABLE_NAME   +
 						" SET TAG_ID = "    + note.getTagID()   + "," +
@@ -88,17 +80,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db = instance.getWritableDatabase();
 		db.execSQL(query);
 
-		query = " UPDATE "			+ ATTACHESTABLE_NAME	+
-				" SET DATA = '"		+ note.getPhoto()		+ "'" +
-				" WHERE NOTE_ID = " + note.getNoteID()		+ ";";
+		// TYPE 1: photo 노트
+		for(Attachment attach : note.getAttaches()){
+			if(attach.getAttachID() < 0)
+				insertAttach(attach);
+			else
+				updateAttach(attach);
+		}
 
-		db = instance.getWritableDatabase();
-		db.execSQL(query);
+		// ALARM 처리
+		for (Alarm alarm : note.getAlarms()) {
+			if (alarm.getAlarmID() < 0)
+				insertAlarm(alarm);
+			else
+				updateAlarm(alarm);
+		}
 	}
-
 	public static synchronized List<Note> selectAllNotes(){
 		String query;
-		query = " SELECT * FROM "   + NOTESTABLE_NAME   + ";";
+		query = " SELECT * FROM "   + NOTESTABLE_NAME   +
+				" LEFT OUTER JOIN " + ALARMTABLE_NAME   +
+				" ON "              + NOTESTABLE_NAME   + ".NOTE_ID" +
+				" = "               + ALARMTABLE_NAME   + ".NOTE_ID" +
+				" GROUP BY "        + NOTESTABLE_NAME   + ".NOTE_ID;";
 
 		SQLiteDatabase db = instance.getReadableDatabase();
 		Cursor cursor = db.rawQuery(query, null);
@@ -107,155 +111,185 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Cursor datacursor;
 
 		List<Note> notes = new LinkedList<>();
+		List<Alarm> alarms;
+		int tmpID;
 		if(cursor.moveToFirst()){
-			while(!cursor.isAfterLast()) {
-				Note note;
-				query = " SELECT DATA FROM "	+ ATTACHESTABLE_NAME	+
-						" WHERE NOTE_ID = "		+ cursor.getInt(0)		+ ";";
-				datacursor = datadb.rawQuery(query, null);
-				if(datacursor.moveToFirst()) {
-					note = new Note(cursor.getInt(0), cursor.getInt(1),
-							cursor.getString(2), cursor.getString(3), datacursor.getString(0));
-				}
-				else{
-					note = new Note(cursor.getInt(0), cursor.getInt(1),
-							cursor.getString(2), cursor.getString(3));
+			for(int i=0; !cursor.isAfterLast(); i++){
+				tmpID = cursor.getInt(0);
+				int tagID = cursor.getInt(1);
+				Note note = new Note(tmpID, tagID,
+						cursor.getString(2), cursor.getString(3));
+
+				// attachment 관리
+				note.setAttaches(selectAttachs(tmpID));
+
+				// alarm 관리
+				alarms = new LinkedList<>();
+				if(cursor.moveToFirst())
+				while(!cursor.isAfterLast()){
+					if(tmpID != cursor.getInt(0)) {
+						note.setAlarms(alarms);
+						break;
+					}
+					if(cursor.getInt(5) != 0){
+						alarms.add(new Alarm(cursor.getInt(5), cursor.getInt(6),
+								cursor.getInt(7), cursor.getLong(8), cursor.getInt(9) != 0));
+					}
+					cursor.moveToNext();
 				}
 				notes.add(note);
-				cursor.moveToNext();
 			}
 		}
 		cursor.close();
 		return notes;
 	}
-
 	public static synchronized List<Note> selectNotes(int tag_id){
 		String query;
 		query = " SELECT * FROM "   + NOTESTABLE_NAME   +
-				" WHERE TAG_ID = "  + tag_id            + ";";
+				" LEFT OUTER JOIN " + ALARMTABLE_NAME   +
+				" ON "              + NOTESTABLE_NAME   + ".NOTE_ID" +
+				" = "               + ALARMTABLE_NAME   + ".NOTE_ID" +
+				" WHERE "           + "TAG_ID" +
+				" = "               + tag_id            +
+				" GROUP BY "        + NOTESTABLE_NAME   + ".NOTE_ID" +";";
 
 		SQLiteDatabase db = instance.getReadableDatabase();
 		Cursor cursor = db.rawQuery(query, null);
+
 		SQLiteDatabase datadb = instance.getReadableDatabase();
 		Cursor datacursor;
 
 		List<Note> notes = new LinkedList<>();
+		List<Alarm> alarms;
+		int tmpID;
 		if(cursor.moveToFirst()){
-			while(!cursor.isAfterLast()) {
-				Note note;
-				query = " SELECT DATA FROM "	+ ATTACHESTABLE_NAME	+
-						" WHERE NOTE_ID = "		+ cursor.getInt(0)		+ ";";
-				datacursor = datadb.rawQuery(query, null);
-				if(datacursor.moveToFirst()) {
-					note = new Note(cursor.getInt(0), cursor.getInt(1),
-							cursor.getString(2), cursor.getString(3), datacursor.getString(0));
-				}
-				else{
-					note = new Note(cursor.getInt(0), cursor.getInt(1),
-							cursor.getString(2), cursor.getString(3));
+			for(int i=0; !cursor.isAfterLast(); i++){
+				tmpID = cursor.getInt(0);
+				int tagID = cursor.getInt(1);
+				Note note = new Note(tmpID, tagID,
+						cursor.getString(2), cursor.getString(3));
+
+				// attachment 관리
+				note.setAttaches(selectAttachs(tmpID));
+				// alarm 관리
+				alarms = new LinkedList<>();
+				while(!cursor.isAfterLast()){
+					if(tmpID != cursor.getInt(0)) {
+						note.setAlarms(alarms);
+						break;
+					}
+					if(cursor.getInt(5) != 0){
+						alarms.add(new Alarm(cursor.getInt(5), cursor.getInt(6),
+								cursor.getInt(7), cursor.getLong(8), cursor.getInt(9) != 0));
+					}
+					cursor.moveToNext();
 				}
 				notes.add(note);
-				cursor.moveToNext();
 			}
 		}
 		cursor.close();
 		return notes;
 	}
-
 	public static synchronized Note selectNote(int note_id){
 		/* TODO: TAG is null 에 대해 고민 할 것 */
-		String query =  " SELECT * FROM "   + NOTESTABLE_NAME   +
-						" WHERE NOTE_ID = " + note_id           + ";";
+		String query;
+		query = " SELECT * FROM "   + NOTESTABLE_NAME   +
+				" LEFT OUTER JOIN " + ALARMTABLE_NAME   +
+				" ON "              + NOTESTABLE_NAME   + ".NOTE_ID" +
+				" = "               + ALARMTABLE_NAME   + ".NOTE_ID" +
+				" WHERE "           + NOTESTABLE_NAME   + ".NOTE_ID" +
+				" = "               + note_id           +
+				" GROUP BY "        + NOTESTABLE_NAME   + ".NOTE_ID" + ";";
+
 		SQLiteDatabase db = instance.getReadableDatabase();
-		SQLiteDatabase datadb = instance.getReadableDatabase();
 		Cursor cursor = db.rawQuery(query, null);
+
+		SQLiteDatabase datadb = instance.getReadableDatabase();
 		Cursor datacursor;
 
-		if(cursor.moveToFirst()){
-			Note note;
-			query = " SELECT DATA FROM " + ATTACHESTABLE_NAME	+
-					" WHERE NOTE_ID = "  + note_id				+ ";";
-			datacursor = datadb.rawQuery(query, null);
-			if(datacursor.moveToFirst()) {
-				datacursor.moveToFirst();
-				note = new Note(cursor.getInt(0), cursor.getInt(1),
-						cursor.getString(2), cursor.getString(3), datacursor.getString(0));
+		if(cursor.moveToFirst()) {
+			Note note = new Note(cursor.getInt(0), cursor.getInt(1),
+					cursor.getString(2), cursor.getString(3));
+
+			// attachment 관리
+			note.setAttaches(selectAttachs(cursor.getInt(0)));
+
+			// alarm 관리
+			List<Alarm> alarms = new LinkedList<>();
+			while (!cursor.isAfterLast()) {
+				if (cursor.getInt(5) != 0) {
+					alarms.add(new Alarm(cursor.getInt(5), cursor.getInt(6),
+							cursor.getInt(7), cursor.getLong(8), cursor.getInt(9) != 0));
+				}
+				cursor.moveToNext();
 			}
-			else {
-				note = new Note(cursor.getInt(0), cursor.getInt(1),
-						cursor.getString(2), cursor.getString(3));
-			}
-			datacursor.close();
+			note.setAlarms(alarms);
 			return note;
 		}
 		cursor.close();
 		return null;
 	}
-
 	public static synchronized void deleteNote(int note_id){
-		String query =  " DELETE FROM "     + NOTESTABLE_NAME   +
-						" WHERE NOTE_ID = " + note_id 			+";";
-
+		String DELETE_NOTE =
+				" DELETE FROM "     + NOTESTABLE_NAME   +
+				" WHERE NOTE_ID = " + note_id 			+";";
+		String DELETE_ATTACH =
+				" DELETE FROM "		+ ATTACHESTABLE_NAME+
+				" WHERE NOTE_ID = " + note_id			+ ";";
+		String DELETE_ALARM =
+				" DELETE FROM "		+ ALARMTABLE_NAME	+
+				" WHERE NOTE_ID = " + note_id			+ ";";
 		SQLiteDatabase db = instance.getWritableDatabase();
-		db.execSQL(query);
-
-		query = " DELETE FROM "		+ ATTACHESTABLE_NAME	+
-				" WHERE NOTE_ID = " + note_id				+ ";";
+		db.execSQL(DELETE_NOTE);
 		db = instance.getWritableDatabase();
-		db.execSQL(query);
+		db.execSQL(DELETE_ATTACH);
+		db = instance.getWritableDatabase();
+		db.execSQL(DELETE_ALARM);
 	}
-
 	public static synchronized void deleteNotes(List<Integer> note_ids){
 		String query;
 		SQLiteDatabase db;
 
-		for(int i = 0; i < note_ids.size(); i++) {
-			query = " DELETE FROM " 	+ NOTESTABLE_NAME +
-					" WHERE NOTE_ID = " + note_ids.get(i) + ";";
-
+		for(Integer noteID : note_ids) {
+			String DELETE_NOTE =
+					" DELETE FROM "     + NOTESTABLE_NAME   +
+					" WHERE NOTE_ID = " + noteID	        +";";
+			String DELETE_ATTACH =
+					" DELETE FROM "		+ ATTACHESTABLE_NAME+
+					" WHERE NOTE_ID = " + noteID	        + ";";
+			String DELETE_ALARM =
+					" DELETE FROM "		+ ALARMTABLE_NAME	+
+					" WHERE NOTE_ID = " + noteID	        + ";";
 			db = instance.getWritableDatabase();
-			db.execSQL(query);
-
-			query = " DELETE FROM " 	+ ATTACHESTABLE_NAME +
-					" WHERE NOTE_ID = " + note_ids.get(i) + ";";
-
+			db.execSQL(DELETE_NOTE);
 			db = instance.getWritableDatabase();
-			db.execSQL(query);
+			db.execSQL(DELETE_ATTACH);
 		}
 	}
-
 
 	/* TAGS */
 	public static synchronized void insertTag(TimeTag tag){
 		String query =  " INSERT INTO "     + TAGSTABLE_NAME            +
-						" values("    		+ null                      + ",'"
-											+ tag.getTag()              + "',"
-											+ tag.getStart().getTime()  + ","
-                                            + tag.getEnd().getTime()    + ");";
+						        " values("    		  + null                      + ",'"
+									                      + tag.getTag()              + "',"
+											                  + tag.getStart().getTime()  + ","
+                                        + tag.getEnd().getTime()    + ");";
 
 		SQLiteDatabase db = instance.getWritableDatabase();
 		db.execSQL(query);
 
-		// TODO: insert tag에서는 tag 에 연동된 타임 테이블도 추가해줘야 함
-
-		ListIterator<TimeTable> iter = tag.getTimes().listIterator();
-		while(iter.hasNext()){
-			TimeTable t = iter.next();
-			query = " INSERT INTO " + TIMETABLES_NAME           +
-					" values("      + t.getTimeID()              + ","
-									+ t.getTagID()              + ","
-									+ t.getStart().getTime()    + ","
-									+ t.getEnd().getTime()      + ","
-									+ t.getWeekly() 			+ ");";
-            db = instance.getWritableDatabase();
-            db.execSQL(query);
-        }
-
-        return;
+		for (TimeTable t : tag.getTimes()) {
+			query = " INSERT INTO " + TIMETABLES_NAME +
+					" values("      + t.getTimeID() + ","
+									+ t.getTagID() + ","
+									+ t.getStart().getTime() + ","
+									+ t.getEnd().getTime() + ");";
+			db.execSQL(query);
+		}
 	}
 
     public static synchronized void updateTag(TimeTag tag){
-        String query =  " UPDATE "          + TAGSTABLE_NAME 	   		+
+        String query =  " UPDATE "      + TAGSTABLE_NAME 	   		+
                 		" SET TAG = '"      + tag.getTag()      		+ "',"  +
             		    " LOOP_START = "    + tag.getStart().getTime()	+ ","   +
                 		" LOOP_END = "      + tag.getEnd().getTime()	+
@@ -297,9 +331,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		if(cursor.moveToFirst()) {
 			for (int i = 0; !cursor.isAfterLast(); i++) {
 				timeTags.add(new TimeTag(cursor.getInt(0), cursor.getString(1), cursor.getLong(2), cursor.getLong(3)));
-				timeTables = new LinkedList<>();
 				tmp_id = cursor.getInt(0);
 
+				timeTables = new LinkedList<>();
 				while (!cursor.isAfterLast()) {
 					if (tmp_id != cursor.getInt(0)) {
 						timeTags.get(i).setTimes(timeTables);
@@ -314,7 +348,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		cursor.close();
 		return timeTags;
 	}
-
 	public static synchronized TimeTag selectTag(int tag_id){
 		String query;
 		query = " SELECT * FROM "   + TAGSTABLE_NAME    +
@@ -341,6 +374,232 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		}
 		cursor.close();
 		return timeTag;
+	}
+
+	/* ATTACHMENT */
+	public static synchronized void insertAttach(Attachment attach){
+		String query =  " INSERT INTO " + ATTACHESTABLE_NAME+
+						" values("      + " NULL "           + "," +
+										 attach.getNoteID()  + ",'" +
+										 attach.getAttach()+ "');";
+		SQLiteDatabase db = instance.getWritableDatabase();
+		db.execSQL(query);
+	}
+	public static synchronized void insertAttaches(List<Attachment> attaches){
+		String query = "";
+		for(Attachment attach : attaches){
+			query +=" INSERT INTO " + ATTACHESTABLE_NAME+
+					" values("      + " NULL "           + "," +
+									 attach.getNoteID()  + ",'" +
+									 attach.getAttach()+ "');";
+		}
+		if(query.equals(""))
+			return;
+		SQLiteDatabase db = instance.getWritableDatabase();
+		db.execSQL(query);
+
+	}
+	public static synchronized Attachment selectAttach(int attachID){
+		String query =  " SELECT * FROM "   + ATTACHESTABLE_NAME +
+						" WHERE ATTACH_ID=" + attachID           + ";";
+
+		SQLiteDatabase db = instance.getReadableDatabase();
+		Cursor cursor = db.rawQuery(query, null);
+
+		if(cursor.moveToFirst()) {
+			if (!cursor.isAfterLast())
+				return new Attachment(cursor.getInt(0), cursor.getInt(1),
+						cursor.getString(2));
+		}
+		return null;
+	}
+	public static synchronized List<Attachment> selectAttachs(int noteID){
+		String query =  " SELECT * FROM "   + ATTACHESTABLE_NAME +
+						" WHERE NOTE_ID="   + noteID             + ";";
+
+		SQLiteDatabase db = instance.getReadableDatabase();
+		Cursor cursor = db.rawQuery(query, null);
+
+		List<Attachment> attaches = new LinkedList<>();
+		if(cursor.moveToFirst())
+		while(!cursor.isAfterLast()) {
+			attaches.add(new Attachment(cursor.getInt(0), cursor.getInt(1),
+					cursor.getString(2)));
+			cursor.moveToNext();
+		}
+		return attaches;
+	}
+	public static synchronized List<Attachment> selectAllAttaches(int noteID){
+		String query =  " SELECT * FROM "   + ATTACHESTABLE_NAME + ";";
+
+		SQLiteDatabase db = instance.getReadableDatabase();
+		Cursor cursor = db.rawQuery(query, null);
+
+		List<Attachment> attaches = new LinkedList<>();
+		if(cursor.moveToFirst())
+		while(!cursor.isAfterLast()) {
+			attaches.add(new Attachment(cursor.getInt(0), cursor.getInt(1),
+					cursor.getString(2)));
+			cursor.moveToNext();
+		}
+		return attaches;
+	}
+	public static synchronized void updateAttach(Attachment attach){
+		String query =  " UPDATE " + ATTACHESTABLE_NAME  +
+				" SET ATTACH_ID =" + attach.getAttachID()+ "," +
+				" NOTE_ID ="       + attach.getNoteID()  + "," +
+				" DATA ='"          + attach.getAttach()  + "';";
+		SQLiteDatabase db = instance.getWritableDatabase();
+		db.execSQL(query);
+	}
+	public static synchronized void updateAttaches(List<Attachment> attaches){
+		String query = "";
+		for(Attachment attach : attaches){
+			query +=" UPDATE " + ATTACHESTABLE_NAME +
+					" SET ATTACH_ID =" + attach.getAttachID() + "," +
+					" NOTE_ID =" + attach.getNoteID() + "," +
+					" DATA ='" + attach.getAttach() + "';";
+		}
+		SQLiteDatabase db = instance.getWritableDatabase();
+		db.execSQL(query);
+	}
+	public static synchronized void deleteAttach(Attachment attach){
+		String query =
+				" DELETE FROM "     + ATTACHESTABLE_NAME  +
+				" WHERE ATTACH_ID ="+ attach.getAttachID()+ ";";
+		SQLiteDatabase db = instance.getWritableDatabase();
+		db.execSQL(query);
+	}
+	public static synchronized void deleteAttaches(List<Attachment> attaches){
+		String query = "";
+		for(Attachment attach : attaches){
+			query +=" DELETE FROM "     + ATTACHESTABLE_NAME  +
+					" WHERE ATTACH_ID ="+ attach.getAttachID()+ ";";
+		}
+		if(query.equals(""))
+			return;
+		SQLiteDatabase db = instance.getWritableDatabase();
+		db.execSQL(query);
+	}
+
+	/* ALARM */
+	public static synchronized void insertAlarm(Alarm alarm){
+		String query =  " INSERT INTO " + ALARMTABLE_NAME   +
+						" values("      + "NULL"            + ","
+										+ alarm.getNoteID()+ ","
+										+ alarm.getBefore() + ","
+										+ alarm.getAlarmTime().getTime() + ","
+										+ alarm.getSnooze() + ");";
+		SQLiteDatabase db = instance.getWritableDatabase();
+		db.execSQL(query);
+	}
+	public static synchronized void insertAlarms(List<Alarm> alarms){
+		String query = "";
+		for(Alarm alarm: alarms){
+			query +=" INSERT INTO " + ALARMTABLE_NAME   +
+					" values("      + "NULL"            + ","
+					+ alarm.getNoteID()+ ","
+					+ alarm.getBefore() + ","
+					+ alarm.getAlarmTime().getTime() + ","
+					+ alarm.getSnooze() + ");";
+		}
+		if(query.equals(""))
+			return;
+		SQLiteDatabase db = instance.getWritableDatabase();
+		db.execSQL(query);
+	}
+	public static synchronized Alarm selectAlarm(int alarmID){
+		String query;
+		query = " SELECT * FROM "   + ALARMTABLE_NAME   +
+				" WHERE "           + " ALARM_ID "      +
+				" = "               + alarmID           + ";";
+
+		SQLiteDatabase db = instance.getReadableDatabase();
+		Cursor cursor = db.rawQuery(query, null);
+		if(cursor.moveToFirst())
+			if(!cursor.isAfterLast())
+				return new Alarm(cursor.getInt(0), cursor.getInt(1),
+						cursor.getInt(2), cursor.getLong(3),
+						cursor.getInt(4) != 0);
+		return null;
+	}
+	public static synchronized List<Alarm> selectAlarms(int noteID){
+		String query;
+		query = " SELECT * FROM "   + ALARMTABLE_NAME   +
+				" WHERE "           + " NOTE_ID "       +
+				" = "               + noteID            + ";";
+
+		SQLiteDatabase db = instance.getReadableDatabase();
+		Cursor cursor = db.rawQuery(query, null);
+
+		List<Alarm> alarms = new LinkedList<>();
+		if(cursor.moveToFirst())
+		while(!cursor.isAfterLast()){
+			alarms.add(new Alarm(cursor.getInt(0), cursor.getInt(1),
+					cursor.getInt(2), cursor.getLong(3),
+					cursor.getInt(4) != 0));
+			cursor.moveToNext();
+		}
+		return alarms;
+	}
+	public static synchronized List<Alarm> selectAllAlarms(){
+		String query;
+		query = " SELECT * FROM "   + ALARMTABLE_NAME   + ";";
+
+		SQLiteDatabase db = instance.getReadableDatabase();
+		Cursor cursor = db.rawQuery(query, null);
+
+		List<Alarm> alarms = new LinkedList<>();
+		if(cursor.moveToFirst())
+		while(!cursor.isAfterLast()){
+			alarms.add(new Alarm(cursor.getInt(0), cursor.getInt(1),
+					cursor.getInt(2), cursor.getLong(3),
+					cursor.getInt(4) != 0));
+			cursor.moveToNext();
+		}
+		return alarms;
+	}
+	public static synchronized void updateAlarm(Alarm alarm){
+		String query =  " UPDATE "  + ALARMTABLE_NAME      +
+				" SET ALARM_ID = "  + alarm.getAlarmID()  + "," +
+				" NOTE_ID = '"      + alarm.getNoteID()   + "'," +
+				" BEFORE = '"       + alarm.getBefore()    + "'," +
+				" ALARM = "  		+ alarm.getAlarmTime().getTime() + "," +
+				" SNOOZE = "        + alarm.getSnooze()    + "," +
+				" WHERE NOTE_ID = " + alarm.getNoteID()   + ";";
+
+		SQLiteDatabase db = instance.getWritableDatabase();
+		db.execSQL(query);
+	}
+	public static synchronized void updateAlarms(List<Alarm> alarms){
+		String query = "";
+		for(Alarm alarm : alarms){
+			query +=" UPDATE "  + ALARMTABLE_NAME      +
+					" SET ALARM_ID = "  + alarm.getAlarmID()  + "," +
+					" NOTE_ID = '"      + alarm.getNoteID()   + "'," +
+					" BEFORE = '"       + alarm.getBefore()    + "'," +
+					" ALARM = "  		+ alarm.getAlarmTime().getTime() + "," +
+					" SNOOZE = "        + alarm.getSnooze()    + "," +
+					" WHERE NOTE_ID = " + alarm.getNoteID()   + ";";
+		}
+		SQLiteDatabase db = instance.getWritableDatabase();
+		db.execSQL(query);
+	}
+	public static synchronized void deleteAlarm(Alarm alarm){
+		String query=
+				" DELETE FROM "		+ ALARMTABLE_NAME	+
+				" WHERE ALARM_ID = " + alarm.getAlarmID()	+ ";";
+		SQLiteDatabase db = instance.getWritableDatabase();
+		db.execSQL(query);
+	}
+	public static synchronized void deleteAlarms(List<Alarm> alarms){
+		String query = "";
+		for(Alarm alarm : alarms){
+			query +=" DELETE FROM "		 + ALARMTABLE_NAME	+
+					" WHERE ALARM_ID = " + alarm.getAlarmID()	+ ";";
+		}
+		SQLiteDatabase db = instance.getWritableDatabase();
+		db.execSQL(query);
 	}
 
 	@Override
@@ -370,18 +629,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						"NOTE_ID INTEGER, " +
 						"DATA TEXT, " +
 						"FOREIGN KEY(NOTE_ID) REFERENCES notes(NOTE_ID) ); ";
-		String CREATE_ALARMS = "CREATE TABLE alarms(" +
+
+		String CREATE_ALARM = "CREATE TABLE alarms(" +
 						"ALARM_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
 						"NOTE_ID INTEGER, " +
-						"TIME TIMESTAMP, " +
-						"FOREIGN KEY(NOTE_ID) REFERENCES notes(NOTE_ID) ); ";
+						"BEFORE INTEGER, " +
+						"ALARM TIMESTAMP, " +
+						"SNOOZE INTEGER DEFAULT 0, " +
+						"FOREIGN KEY(NOTE_ID) REFERENCES notes(NOTE_ID) );";
 		String INITIALIZE_DATABASE = "INSERT INTO " + TAGSTABLE_NAME +
 				" values(0, 'No Tag', null, null);";
 		db.execSQL(CREATE_TIMETABLES);
 		db.execSQL(CREATE_TAGS);
 		db.execSQL(CREATE_NOTES);
 		db.execSQL(CREATE_ATTACHMENTS);
-		db.execSQL(CREATE_ALARMS);
+		db.execSQL(CREATE_ALARM);
 		db.execSQL(INITIALIZE_DATABASE);
 	}
 
@@ -396,24 +658,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		// TODO: sample을 DB와 연결 할 것
 		List<Note> notes = Arrays.asList(
 				new Note("Dummy Note1", "This is Dummy. This is Dummy. "),
-				new Note("Dummy Note2", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note3", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note4", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note5", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note6", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note7", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note8", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note9", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note10", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note11", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note12", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note13", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "),
-				new Note("Dummy Note14", "This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. This is Dummy. "));
-
+				new Note("NOTE 2", "222222222222222222222222 "));
 		for(int i=0; i<notes.size(); i++){
-			Note n = new Note(notes.get(i).getTitle(), notes.get(i).getBody());
-			DatabaseHelper.insertNote(n);
+			DatabaseHelper.insertNote(notes.get(i));
 		}
+
+		String query;
+		query = " SELECT * FROM "   + TAGSTABLE_NAME    +
+				" LEFT OUTER JOIN " + TIMETABLES_NAME   +
+				" on "              + TAGSTABLE_NAME    + ".TAG_ID" +
+				"="                 + TIMETABLES_NAME   + ".TAG_ID" +
+				" GROUP BY "        + TAGSTABLE_NAME    + ".TAG_ID;";
+
+		SQLiteDatabase db = instance.getReadableDatabase();
+		Cursor cursor = db.rawQuery(query, null);
+
 		dummyNoteLoaded = true;
 	}
 
