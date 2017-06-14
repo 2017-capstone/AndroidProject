@@ -17,6 +17,7 @@ public class TimeTable implements Parcelable{
 	private int tag_id;
 	private Timestamp start;
 	private Timestamp end;
+	private byte weekly;
 
 	public TimeTable(){this.time_id=-1;}
 	public TimeTable(Timestamp t1, Timestamp t2){
@@ -24,18 +25,21 @@ public class TimeTable implements Parcelable{
 		this.tag_id = -1;
 		start = t1;
 		end = t2;
+		weekly = 1;
 	}
 	public TimeTable(int tag_id, Timestamp t1, Timestamp t2){
 		this.time_id = -1;
 		this.tag_id=tag_id;
 		start = t1;
 		end = t2;
+		weekly = 1;
 	}
 	public TimeTable(int time_id, int tag_id, Timestamp t1, Timestamp t2){
 		this.time_id = time_id;
 		this.tag_id = -1;
 		start = t1;
-		end = t2;}
+		end = t2;
+		weekly = 1;}
 	public TimeTable(int i, int i2, long t1, long t2){time_id=i; tag_id=i2; start=new Timestamp(t1); end=new Timestamp(t2);}
 
 	public TimeTable(Parcel in) { readFromParcel(in);}
@@ -56,6 +60,7 @@ public class TimeTable implements Parcelable{
 	public int getTagID(){return this.tag_id;}
 	public Timestamp getStart(){return start;}
 	public Timestamp getEnd(){return end;}
+	public byte getWeekly(){return weekly;}
 	public void setTimeID(int i){time_id=i;}
 	public void setTagID(int i){tag_id=i;}
 	public void setStart(Timestamp t){start = t;}
