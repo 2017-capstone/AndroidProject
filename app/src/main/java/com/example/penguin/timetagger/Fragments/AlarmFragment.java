@@ -65,10 +65,6 @@ public class AlarmFragment extends Fragment {
         int id = item.getItemId();
 
         if (id == R.id.action_save) {
-	        //EditText etNoteTitle = (EditText)(getActivity()).findViewById(R.id.toolbar_et);
-            //EditText et = (EditText)getActivity().findViewById(R.id.edit_text);
-	        //String noteTitle = etNoteTitle.getText().toString();
-	        //note.setTitle(noteTitle);
 
             if(note.getNoteID() == -1){
             }

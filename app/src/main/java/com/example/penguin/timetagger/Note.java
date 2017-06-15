@@ -20,7 +20,7 @@ public class Note implements Parcelable {
     private int type; // 0 : text
                       // 1 : photo
                       // 2 : record
-    //private Timestamp alarm;
+    private Timestamp alarm;
 
     public Note(){note_id = -1; /*alarm.setTime(0L);*/}
     public Note(String t, String b){note_id = -1; tag_id = 0; title = t; body = b; type = 0; /*alarm.setTime(0L);*/}
@@ -35,7 +35,7 @@ public class Note implements Parcelable {
     public String getBody(){return body;}
     public String getPhoto(){return photo;}
     public int getType(){return type;}
-    //public Timestamp getAlarm(){return alarm;}
+    public Timestamp getAlarm(){return alarm;}
 
     public void setNoteID(int id){note_id = id;}
     public void setTagID(int id){tag_id = id;}
@@ -43,7 +43,7 @@ public class Note implements Parcelable {
     public void setBody(String b){body=b;}
     public void setPhotoDir(String p){photo=p;}
     public void setType(int t){type=t;}
-    //public void setAlarm(Timestamp a){alarm = a;}
+    public void setAlarm(Timestamp a){alarm = a;}
 
     public Note(Parcel in){
         readFromParcel(in);
