@@ -33,15 +33,23 @@ public class DrawerActivity extends AppCompatActivity
         // 네비게이션 생성
         createNavigation();
 
-        DatabaseHelper db = DatabaseHelper.getInstance(this);
-        db.loadDummyTags();
+        // TODO: 1회 실행후, 다음 줄은 주석 처리 할 것.
+        // DatabaseHelper.loadDummyNotes();
+        // DatabaseHelper.loadDummyTags();
 
-        // 초기 뷰(현재 시간에 맞는 뷰가 되야 함)
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction
-                .replace(R.id.frame_content, new NoteListFragment())
-                .addToBackStack(null)
-                .commit();
+        DatabaseHelper db = DatabaseHelper.getInstance(this);
+        TimeTag tag = DatabaseHelper.selectCurrentTag();
+        if(tag != null){
+            NoteListFragment nlFragment = NoteListFragment.newInstance(tag);
+            movetoFragment(nlFragment);
+        }else {
+            // 초기 뷰(현재 시간에 맞는 뷰가 되야 함)
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction
+                    .replace(R.id.frame_content, new NoteListFragment())
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 
     protected void createNavigation(){
@@ -60,8 +68,8 @@ public class DrawerActivity extends AppCompatActivity
         List<TimeTag> timeTags = DatabaseHelper.selectAllTags();
         for(int i=0; i<timeTags.size(); i++)
             menu.add(R.id.single_view,
-                     timeTags.get(i).getID() << 4,
-                     1/*Group1:singleTag*/,
+                     timeTags.get(i).getID() << 4, // onNavigationItemSelected
+                     1/*Group1:singleTag*/, //....... 에 영향을 줌
                      timeTags.get(i).getTag())
                     .setIcon(R.drawable.ic_class)
                     .setCheckable(true

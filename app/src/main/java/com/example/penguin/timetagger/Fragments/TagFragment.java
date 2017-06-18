@@ -30,6 +30,7 @@ import com.example.penguin.timetagger.R;
 import com.example.penguin.timetagger.TimeTable;
 import com.example.penguin.timetagger.TimeTag;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -83,7 +84,7 @@ public class TagFragment extends Fragment implements DatePickerDialog.OnDateSetL
 	               int y=0, m=0, d=0;
 	               try {
 		               Calendar cal = Calendar.getInstance();
-		               cal.setTime(sdf.parse(timeTag.getStart().toString()));
+		               cal.setTime(sdf.parse(curEdit.getText().toString()));
 		               y = cal.get(Calendar.YEAR);
 		               m = cal.get(Calendar.MONTH);
 		               d = cal.get(Calendar.DAY_OF_MONTH);
@@ -106,7 +107,7 @@ public class TagFragment extends Fragment implements DatePickerDialog.OnDateSetL
 				int y=0, m=0, d=0;
 				try {
 					Calendar cal = Calendar.getInstance();
-					cal.setTime(sdf.parse(timeTag.getStart().toString()));
+					cal.setTime(sdf.parse(curEdit.getText().toString()));
 					y = cal.get(Calendar.YEAR);
 					m = cal.get(Calendar.MONTH);
 					d = cal.get(Calendar.DAY_OF_MONTH);
@@ -159,6 +160,18 @@ public class TagFragment extends Fragment implements DatePickerDialog.OnDateSetL
 		int id = item.getItemId();
 		if(id==R.id.action_save){
 			timeTag.setTimes(tla.getTimes());
+
+			try {
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(sdf.parse(tagBegin.getText().toString()));
+				timeTag.setStart(new Timestamp(cal.getTimeInMillis()));
+
+				cal.setTime(sdf.parse(tagEnd.getText().toString()));
+				timeTag.setEnd(new Timestamp(cal.getTimeInMillis()));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+
 			DatabaseHelper.getInstance(getActivity());
 			if(timeTag.getID() == -1){
 				DatabaseHelper.insertTag(timeTag);
