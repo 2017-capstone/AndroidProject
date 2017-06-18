@@ -7,10 +7,4 @@
         android:title="Save"
         android:icon="@drawable/ic_done"
         app:showAsAction="always"/>
-    <item
-        android:id="@+id/action_camera"
-        android:orderInCategory="199"
-        android:title="Camera"
-        android:icon="@drawable/ic_settings"
-        app:showAsAction="always"/>
 </menu>
