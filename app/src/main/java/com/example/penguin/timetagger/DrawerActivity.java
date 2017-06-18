@@ -35,6 +35,9 @@ public class DrawerActivity extends AppCompatActivity
         // 네비게이션 생성
         createNavigation();
 
+        DatabaseHelper db = DatabaseHelper.getInstance(this);
+        db.loadDummyTags();
+
         // 초기 뷰(현재 시간에 맞는 뷰가 되야 함)
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction
