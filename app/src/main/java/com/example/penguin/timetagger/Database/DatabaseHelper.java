@@ -14,6 +14,7 @@ import com.example.penguin.timetagger.TimeTag;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -385,6 +386,46 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		}
 		cursor.close();
 		return timeTag;
+	}
+	public static synchronized TimeTag selectCurrentTag(){
+		List<TimeTag> tags = selectAllTags();
+		TimeTag currentTag = null;
+		for(TimeTag t : tags){
+			Long start = t.getStart().getTime();
+			Long end = t.getEnd().getTime();
+			Long current = Calendar.getInstance().getTimeInMillis();
+			if(start <= current && current <= end){
+				// 1차 기간 통과
+				for(TimeTable tt : t.getTimes()){
+					Calendar cal = Calendar.getInstance();
+					int h, m;
+					cal.setTime(tt.getStart()); //... 시간과 분만 추출
+					h = cal.get(Calendar.HOUR_OF_DAY);
+					m = cal.get(Calendar.MINUTE);
+					cal = Calendar.getInstance();
+					cal.set(Calendar.HOUR_OF_DAY, h);
+					cal.set(Calendar.MINUTE,m);
+					start = cal.getTimeInMillis();
+
+					cal.setTime(tt.getEnd());
+					h = cal.get(Calendar.HOUR_OF_DAY);
+					m = cal.get(Calendar.MINUTE);
+					cal = Calendar.getInstance();
+					cal.set(Calendar.HOUR_OF_DAY, h);
+					cal.set(Calendar.MINUTE,m);
+					end = cal.getTimeInMillis();
+
+					cal = Calendar.getInstance();
+					current = cal.getTimeInMillis();
+
+					if(start <= current && current <= end){
+						// 2차 통과
+						return t;
+					}
+				}
+			}
+		}
+		return currentTag;
 	}
 
 	/* ATTACHMENT */
