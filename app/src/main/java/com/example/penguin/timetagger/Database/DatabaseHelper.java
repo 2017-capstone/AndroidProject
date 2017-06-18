@@ -505,9 +505,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 	public static synchronized void updateAttach(Attachment attach){
 		String query =  " UPDATE " + ATTACHESTABLE_NAME  +
-				" SET ATTACH_ID =" + attach.getAttachID()+ "," +
 				" NOTE_ID ="       + attach.getNoteID()  + "," +
-				" DATA ='"          + attach.getAttach()  + "';";
+				" DATA ='"          + attach.getAttach()  + "'" +
+				" WHERE ATTACH_ID =" + attach.getAttachID()+ ";";
 		SQLiteDatabase db = instance.getWritableDatabase();
 		db.execSQL(query);
 	}
@@ -515,9 +515,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		String query = "";
 		for(Attachment attach : attaches){
 			query +=" UPDATE " + ATTACHESTABLE_NAME +
-					" SET ATTACH_ID =" + attach.getAttachID() + "," +
-					" NOTE_ID =" + attach.getNoteID() + "," +
-					" DATA ='" + attach.getAttach() + "';";
+					" NOTE_ID ="       + attach.getNoteID()  + "," +
+					" DATA ='"          + attach.getAttach()  + "'" +
+					" WHERE ATTACH_ID =" + attach.getAttachID()+ ";";
 		}
 		SQLiteDatabase db = instance.getWritableDatabase();
 		db.execSQL(query);
@@ -624,7 +624,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				" NOTE_ID = '"      + alarm.getNoteID()   + "'," +
 				" BEFORE = '"       + alarm.getBefore()    + "'," +
 				" ALARM = "  		+ alarm.getAlarmTime().getTime() + "," +
-				" SNOOZE = "        + alarm.getSnooze()    + "," +
+				" SNOOZE = "        + alarm.getSnooze()    +
 				" WHERE NOTE_ID = " + alarm.getNoteID()   + ";";
 
 		SQLiteDatabase db = instance.getWritableDatabase();
@@ -638,7 +638,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					" NOTE_ID = '"      + alarm.getNoteID()   + "'," +
 					" BEFORE = '"       + alarm.getBefore()    + "'," +
 					" ALARM = "  		+ alarm.getAlarmTime().getTime() + "," +
-					" SNOOZE = "        + alarm.getSnooze()    + "," +
+					" SNOOZE = "        + alarm.getSnooze()    +
 					" WHERE NOTE_ID = " + alarm.getNoteID()   + ";";
 		}
 		SQLiteDatabase db = instance.getWritableDatabase();
