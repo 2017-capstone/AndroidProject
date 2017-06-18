@@ -66,6 +66,18 @@
                         android:textSize="14sp"
                         android:hint="body here"/>
                 </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp">
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/noteAlarm"
+                        android:hint="알람이 없습니다."/>
+                </RelativeLayout>
             </LinearLayout>
         </android.support.v7.widget.CardView>
 </LinearLayout>
