@@ -49,6 +49,7 @@ public class TagFragment extends Fragment implements DatePickerDialog.OnDateSetL
 	EditText tagBegin;
 	EditText tagEnd;
 	EditText curEdit;
+	TimeListAdapter tla;
 
 	public static TagFragment newInstance(TimeTag timeTag){
 		Bundle bundle = new Bundle();
@@ -128,12 +129,19 @@ public class TagFragment extends Fragment implements DatePickerDialog.OnDateSetL
 			rv = (RecyclerView)view.findViewById(R.id.timeItemRV);
 			rv.setLayoutManager(lm);
 
-			TimeListAdapter tla = new TimeListAdapter(getActivity(), timeTag.getTimes());
+			tla = new TimeListAdapter(getActivity(), timeTag.getTimes());
 			rv.setAdapter(tla);
 			tla.notifyDataSetChanged();
 		}catch (Exception e){
 			System.out.println(e);
 		}
+
+		view.findViewById(R.id.newTime).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				tla.addTimetable();
+			}
+		});
 
 		setHasOptionsMenu(true);
 
@@ -150,9 +158,12 @@ public class TagFragment extends Fragment implements DatePickerDialog.OnDateSetL
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if(id==R.id.action_save){
+			timeTag.setTimes(tla.getTimes());
 			DatabaseHelper.getInstance(getActivity());
 			if(timeTag.getID() == -1){
 				DatabaseHelper.insertTag(timeTag);
+			}else{
+				DatabaseHelper.updateTag(timeTag);
 			}
 		}
 		return super.onOptionsItemSelected(item);

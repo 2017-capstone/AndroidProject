@@ -270,7 +270,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	/* TAGS */
 	public static synchronized void insertTag(TimeTag tag){
 		String query =  " INSERT INTO "     + TAGSTABLE_NAME            +
-						" values("    		+ null                      + ",'"
+						" values("    		+ " NULL "                  + ",'"
 											+ tag.getTag()              + "',"
 											+ tag.getStart().getTime()  + ","
                                             + tag.getEnd().getTime()    + ");";
@@ -278,10 +278,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db = instance.getWritableDatabase();
 		db.execSQL(query);
 
+		Cursor cursor = db.rawQuery("SELECT MAX(NOTE_ID) from notes", null);
+		cursor.moveToFirst();
+		tag.setID(cursor.getInt(0));
+
 		for (TimeTable t : tag.getTimes()) {
-			query = " INSERT INTO " + TIMETABLES_NAME +
-					" values("      + t.getTimeID() + ","
-									+ t.getTagID() + ","
+			query = " INSERT INTO " + TIMETABLES_NAME   +
+					" values("      + "NULL "           + ","
+									+ tag.getID()       + ","
 									+ t.getStart().getTime() + ","
 									+ t.getEnd().getTime() + ");";
 			db.execSQL(query);
@@ -301,12 +305,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ListIterator<TimeTable> iter = tag.getTimes().listIterator();
         while(iter.hasNext()){
             TimeTable t = iter.next();
-            query = " UPDATE "          + TIMETABLES_NAME           +
-                    " SET TIME_ID = "   + t.getTimeID()             + ","   +
-                    " START = "         + t.getStart().getTime()    + ","   +
-                    " END = "           + t.getEnd().getTime()      + ","   +
-					" WEEK = "			+ t.getWeekly()				+ ","	+
-                    " WHERE TAG_ID = "  + t.getTagID()              + ";";
+	        if(t.getTimeID()==-1){
+		        query = " INSERT INTO " + TIMETABLES_NAME +
+						        " values("      + "NULL" + ","
+						        + tag.getID()  + ","
+						        + t.getStart().getTime() + ","
+						        + t.getEnd().getTime() + ");";
+	        }else {
+		        query = " UPDATE " + TIMETABLES_NAME +
+				        " SET TIME_ID = " + t.getTimeID() + "," +
+				        " START = " + t.getStart().getTime() + "," +
+				        " END = " + t.getEnd().getTime() + "," +
+				        " WHERE TAG_ID = " + t.getTagID() + ";";
+	        }
             db = instance.getWritableDatabase();
             db.execSQL(query);
         }
@@ -677,8 +688,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public static void loadDummyTags(){
+		List<TimeTable> timeItems = new LinkedList<>();
+		timeItems.add(new TimeTable(0, new Timestamp(0), new Timestamp(0)));
 		List<TimeTag> timeTags = Arrays.asList(
-				new TimeTag("CAPSTONE", Timestamp.valueOf("2017-03-01 00:00:00"), Timestamp.valueOf("2017-06-24 00:00:00"))
+				new TimeTag("CAPSTONE", Timestamp.valueOf("2017-03-01 00:00:00"), Timestamp.valueOf("2017-06-24 00:00:00"), timeItems)
 		);
 		for(int i=0; i<timeTags.size(); i++){
 			DatabaseHelper.insertTag(timeTags.get(i) );

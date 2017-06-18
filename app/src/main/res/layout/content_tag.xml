@@ -34,6 +34,7 @@
         android:paddingBottom="16dp"
         android:paddingTop="16dp"
         android:textSize="16sp"
+        android:focusableInTouchMode="false"
         android:focusable="false"/>
 
     <TextView
@@ -51,8 +52,27 @@
         android:paddingBottom="16dp"
         android:paddingTop="16dp"
         android:textSize="16sp"
+        android:focusableInTouchMode="false"
         android:focusable="false" />
 
+    <LinearLayout
+        android:id="@+id/timeVoid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:clickable="true">
+        <TextView
+            android:id="@+id/newTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="+"
+            android:textSize="22dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:duplicateParentState="true"/>
+    </LinearLayout>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">

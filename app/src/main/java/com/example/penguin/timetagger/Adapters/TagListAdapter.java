@@ -25,6 +25,8 @@ import java.util.List;
 public class TagListAdapter extends RecyclerView.Adapter<TagListAdapter.TagListViewHolder> {
 	private Context context;
 	private List<TimeTag> timeTagItems;
+
+
 	public class TagListViewHolder extends RecyclerView.ViewHolder{
 		TextView v_tag;
 		TextView v_duration;
