@@ -1,12 +1,7 @@
 package com.example.penguin.timetagger.Adapters;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.media.Image;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -17,17 +12,13 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.penguin.timetagger.Attachment;
 import com.example.penguin.timetagger.Database.DatabaseHelper;
 import com.example.penguin.timetagger.Fragments.NoteFragment;
 import com.example.penguin.timetagger.Note;
 import com.example.penguin.timetagger.R;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -128,10 +119,12 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
         }
 
         // 이미지 보여주기
-        if(noteItems.get(position).getPhoto() != null){
+        if(noteItems.get(position).getType() == 1){ // 이미지 타입
             // 권한 받아오기
             //...
-            holder.img.setImageURI(Uri.parse(noteItems.get(position).getPhoto()));
+            List<Attachment> attaches = noteItems.get(position).getAttaches();
+            if(attaches.size() > 0)
+                holder.img.setImageURI(Uri.parse(attaches.get(0).getAttach()));
         }
 
         // 체크박스 표시 또는 숨기기 (클릭커블 포함)
