@@ -3,12 +3,12 @@
 
     <item
         is-multidex="true"
-        jar="C:\Github\AndroidProject\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jar="/home/penguin/AndroidStudioProjects/TimeTagger/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.2"
-        sha1="1d22b71a83adad3f0157661b47c87ae38724811d">
-        <dex dex="C:\Github\AndroidProject\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run-bootstrap_bd29f22f78e67035c8ee205b796531480cea9dcd\classes.dex" />
+        sha1="9104c157824437f713f29388de0a84e2b6d36b50">
+        <dex dex="/home/penguin/AndroidStudioProjects/TimeTagger/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_91544f5948c324ea3fcb0456427c2f9f0bf435a6/classes.dex" />
     </item>
 
 </items>

@@ -12,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.example.penguin.timetagger.Adapters.TagListAdapter;
 import com.example.penguin.timetagger.Database.DatabaseHelper;
@@ -27,13 +28,6 @@ public class TagListFragment extends Fragment {
     RecyclerView rv;
     LinearLayoutManager lm;
 
-    public static TagFragment newInstance(TimeTag timeTag){
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("TAG", timeTag);
-        TagFragment fragment = new TagFragment();
-        fragment.setArguments(bundle);
-        return fragment;
-    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.content_tag_list, container, false);
@@ -42,9 +36,10 @@ public class TagListFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                movetoTagFragment(new TimeTag());
+                movetoTagFragment(null);
             }
         });
+
 
         DatabaseHelper.getInstance(getActivity());
 
@@ -62,6 +57,7 @@ public class TagListFragment extends Fragment {
             System.out.println(e);
         }
         setHasOptionsMenu(false);
+
         return view;
     }
 
@@ -85,7 +81,9 @@ public class TagListFragment extends Fragment {
     }
 
     private void movetoTagFragment(TimeTag timeTag){
-        TagFragment fragment = TagFragment.newInstance(timeTag);
+        TagFragment fragment = new TagFragment();
+        if(timeTag != null)
+            fragment = TagFragment.newInstance(timeTag);
 
         getFragmentManager()
                 .beginTransaction()

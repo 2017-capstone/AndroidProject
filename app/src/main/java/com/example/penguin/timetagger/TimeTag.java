@@ -15,7 +15,7 @@ import java.util.List;
 
 public class TimeTag implements Parcelable {
 	/* TODO: 데이터 베이스에 설계에 맞게 클래스를 생성할 것 */
-	private int tag_id;
+	private int tag_id = -1;
 	private String tag;
 	private Timestamp start;
 	private Timestamp end;

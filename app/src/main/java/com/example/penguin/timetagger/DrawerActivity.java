@@ -11,6 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.example.penguin.timetagger.Adapters.NoteGridViewAdapter;
 import com.example.penguin.timetagger.Database.DatabaseHelper;
@@ -39,11 +41,19 @@ public class DrawerActivity extends AppCompatActivity
 
         DatabaseHelper db = DatabaseHelper.getInstance(this);
         TimeTag tag = DatabaseHelper.selectCurrentTag();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+
         if(tag != null){
+            TextView currentTag = ((TextView)headerView.findViewById(R.id.currentTag));
+            currentTag.setText(tag.getTag());
             NoteListFragment nlFragment = NoteListFragment.newInstance(tag);
             movetoFragment(nlFragment);
         }else {
             // 초기 뷰(현재 시간에 맞는 뷰가 되야 함)
+            TextView currentTag = ((TextView)headerView.findViewById(R.id.currentTag));
+            currentTag.setText("빈 시간입니다");
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction
                     .replace(R.id.frame_content, new NoteListFragment())
