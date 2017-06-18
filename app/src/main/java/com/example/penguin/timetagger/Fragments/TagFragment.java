@@ -64,19 +64,27 @@ public class TagFragment extends Fragment implements DatePickerDialog.OnDateSetL
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		view = inflater.inflate(R.layout.content_tag, container, false);
+
+
+		tagName = (EditText)view.findViewById(R.id.tagName);
+		tagBegin = (EditText)view.findViewById(R.id.tagBegin);
+		tagEnd = (EditText) view.findViewById(R.id.tagEnd);
+
 		Bundle bundle = this.getArguments();
 		if(bundle != null) {
 			timeTag = bundle.getParcelable("TAG");
+			tagName.setText(timeTag.getTag(), TextView.BufferType.EDITABLE);
+			tagBegin.setText(sdf.format(timeTag.getStart()), TextView.BufferType.EDITABLE);
+			tagEnd.setText(sdf.format(timeTag.getEnd()), TextView.BufferType.EDITABLE);
+
 		}else{
 			timeTag = new TimeTag();
+			tagName.setHint("새로운 태그...");
+			tagBegin.setText("??");
+			tagEnd.setText("??");
 		}
-		tagName = (EditText)view.findViewById(R.id.tagName);
-		tagName.setText(timeTag.getTag(), TextView.BufferType.EDITABLE);
 
 
-
-		tagBegin = (EditText)view.findViewById(R.id.tagBegin);
-		tagBegin.setText(sdf.format(timeTag.getStart()), TextView.BufferType.EDITABLE);
 		tagBegin.setOnClickListener(new View.OnClickListener() {
                @Override
                public void onClick(View v) {
@@ -89,7 +97,10 @@ public class TagFragment extends Fragment implements DatePickerDialog.OnDateSetL
 		               m = cal.get(Calendar.MONTH);
 		               d = cal.get(Calendar.DAY_OF_MONTH);
 	               } catch (ParseException e) {
-		               e.printStackTrace();
+		               Calendar cal = Calendar.getInstance();
+		               y = cal.get(Calendar.YEAR);
+		               m = cal.get(Calendar.MONTH);
+		               d = cal.get(Calendar.DAY_OF_MONTH);
 	               }
                    DatePickerDialog dialog = new DatePickerDialog(
 		                   getActivity(), TagFragment.this, y, m, d
@@ -98,8 +109,6 @@ public class TagFragment extends Fragment implements DatePickerDialog.OnDateSetL
                }
         });
 
-		tagEnd = (EditText) view.findViewById(R.id.tagEnd);
-		tagEnd.setText(sdf.format(timeTag.getEnd()), TextView.BufferType.EDITABLE);
 		tagEnd.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -112,7 +121,10 @@ public class TagFragment extends Fragment implements DatePickerDialog.OnDateSetL
 					m = cal.get(Calendar.MONTH);
 					d = cal.get(Calendar.DAY_OF_MONTH);
 				} catch (ParseException e) {
-					e.printStackTrace();
+					Calendar cal = Calendar.getInstance();
+					y = cal.get(Calendar.YEAR);
+					m = cal.get(Calendar.MONTH);
+					d = cal.get(Calendar.DAY_OF_MONTH);
 				}
 				DatePickerDialog dialog = new DatePickerDialog(
 						getActivity(), TagFragment.this, y, m, d
@@ -160,7 +172,7 @@ public class TagFragment extends Fragment implements DatePickerDialog.OnDateSetL
 		int id = item.getItemId();
 		if(id==R.id.action_save){
 			timeTag.setTimes(tla.getTimes());
-
+			timeTag.setTag(tagName.getText().toString());
 			try {
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(sdf.parse(tagBegin.getText().toString()));
@@ -178,6 +190,8 @@ public class TagFragment extends Fragment implements DatePickerDialog.OnDateSetL
 			}else{
 				DatabaseHelper.updateTag(timeTag);
 			}
+			getFragmentManager().popBackStackImmediate();
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}

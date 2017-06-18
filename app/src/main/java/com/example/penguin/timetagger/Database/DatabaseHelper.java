@@ -416,6 +416,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					end = cal.getTimeInMillis();
 
 					cal = Calendar.getInstance();
+					h = cal.get(Calendar.HOUR_OF_DAY);
+					m = cal.get(Calendar.MINUTE);
+					cal = Calendar.getInstance();
+					cal.set(Calendar.HOUR_OF_DAY, h);
+					cal.set(Calendar.MINUTE,m);
 					current = cal.getTimeInMillis();
 
 					if(start <= current && current <= end){
