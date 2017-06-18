@@ -314,10 +314,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						        + t.getEnd().getTime() + ");";
 	        }else {
 		        query = " UPDATE " + TIMETABLES_NAME +
-				        " SET TIME_ID = " + t.getTimeID() + "," +
+				        " SET TAG_ID = " + t.getTagID() + "," +
 				        " START = " + t.getStart().getTime() + "," +
-				        " END = " + t.getEnd().getTime() + "," +
-				        " WHERE TAG_ID = " + t.getTagID() + ";";
+				        " END = " + t.getEnd().getTime() +
+				        " WHERE TIME_ID = " + t.getTimeID() + ";";
 	        }
             db = instance.getWritableDatabase();
             db.execSQL(query);
