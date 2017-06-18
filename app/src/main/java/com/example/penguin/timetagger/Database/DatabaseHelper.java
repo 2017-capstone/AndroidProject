@@ -321,6 +321,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	        }
             db = instance.getWritableDatabase();
             db.execSQL(query);
+
         }
 
         return;
@@ -332,7 +333,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				" LEFT OUTER JOIN " + TIMETABLES_NAME   +
 				" on "              + TAGSTABLE_NAME    + ".TAG_ID" +
 				"="                 + TIMETABLES_NAME   + ".TAG_ID" +
-				" GROUP BY "        + TAGSTABLE_NAME    + ".TAG_ID;";
+				" ORDER BY "        + TAGSTABLE_NAME    + ".TAG_ID;";
 
 		SQLiteDatabase db = instance.getReadableDatabase();
 		Cursor cursor = db.rawQuery(query, null);
@@ -351,10 +352,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						timeTags.get(i).setTimes(timeTables);
 						break;
 					}
-					if (cursor.getInt(4) != 0)
+					if (cursor.getInt(5) != 0)
 						timeTables.add(new TimeTable(cursor.getInt(4), cursor.getInt(5), cursor.getLong(6), cursor.getLong(7)));
 					cursor.moveToNext();
 				}
+				timeTags.get(i).setTimes(timeTables);
 			}
 		}
 		cursor.close();
@@ -379,7 +381,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			List<TimeTable> timeTables = new LinkedList<>();
 
 			while (!cursor.isAfterLast()) {
-				if (cursor.getInt(4) != 0)
+				if (cursor.getInt(5) != 0)
 					timeTables.add(new TimeTable(cursor.getInt(4), cursor.getInt(5), cursor.getLong(6), cursor.getLong(7)));
 				cursor.moveToNext();
 			}
