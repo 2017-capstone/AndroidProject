@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.penguin.timetagger.Adapters.TagListAdapter;
 import com.example.penguin.timetagger.Adapters.TimeListAdapter;
@@ -181,7 +182,16 @@ public class TagFragment extends Fragment implements DatePickerDialog.OnDateSetL
 				cal.setTime(sdf.parse(tagEnd.getText().toString()));
 				timeTag.setEnd(new Timestamp(cal.getTimeInMillis()));
 			} catch (ParseException e) {
+				if(timeTag.getStart() == null ||
+						timeTag.getEnd() == null) {
+					Toast.makeText(getContext(), "태그 설정기간이 비어있습니다", Toast.LENGTH_SHORT).show();
+					return super.onOptionsItemSelected(item);
+				}
 				e.printStackTrace();
+			}
+			if(timeTag.getTag() == null || timeTag.getTag().equals("")){
+				Toast.makeText(getContext(), "태그 이름을 입력해 주세요", Toast.LENGTH_SHORT).show();
+				return super.onOptionsItemSelected(item);
 			}
 
 			DatabaseHelper.getInstance(getActivity());

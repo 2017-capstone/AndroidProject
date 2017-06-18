@@ -314,13 +314,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						        + t.getEnd().getTime() + ");";
 	        }else {
 		        query = " UPDATE " + TIMETABLES_NAME +
-				        " SET TIME_ID = " + t.getTimeID() + "," +
+				        " SET TAG_ID = " + t.getTagID() + "," +
 				        " START = " + t.getStart().getTime() + "," +
-				        " END = " + t.getEnd().getTime() + "," +
-				        " WHERE TAG_ID = " + t.getTagID() + ";";
+				        " END = " + t.getEnd().getTime() +
+				        " WHERE TIME_ID = " + t.getTimeID() + ";";
 	        }
             db = instance.getWritableDatabase();
             db.execSQL(query);
+
         }
 
         return;
@@ -332,7 +333,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				" LEFT OUTER JOIN " + TIMETABLES_NAME   +
 				" on "              + TAGSTABLE_NAME    + ".TAG_ID" +
 				"="                 + TIMETABLES_NAME   + ".TAG_ID" +
-				" GROUP BY "        + TAGSTABLE_NAME    + ".TAG_ID;";
+				" ORDER BY "        + TAGSTABLE_NAME    + ".TAG_ID;";
 
 		SQLiteDatabase db = instance.getReadableDatabase();
 		Cursor cursor = db.rawQuery(query, null);
@@ -351,10 +352,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						timeTags.get(i).setTimes(timeTables);
 						break;
 					}
-					if (cursor.getInt(4) != 0)
+					if (cursor.getInt(5) != 0)
 						timeTables.add(new TimeTable(cursor.getInt(4), cursor.getInt(5), cursor.getLong(6), cursor.getLong(7)));
 					cursor.moveToNext();
 				}
+				timeTags.get(i).setTimes(timeTables);
 			}
 		}
 		cursor.close();
@@ -379,7 +381,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			List<TimeTable> timeTables = new LinkedList<>();
 
 			while (!cursor.isAfterLast()) {
-				if (cursor.getInt(4) != 0)
+				if (cursor.getInt(5) != 0)
 					timeTables.add(new TimeTable(cursor.getInt(4), cursor.getInt(5), cursor.getLong(6), cursor.getLong(7)));
 				cursor.moveToNext();
 			}
@@ -503,9 +505,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 	public static synchronized void updateAttach(Attachment attach){
 		String query =  " UPDATE " + ATTACHESTABLE_NAME  +
-				" SET ATTACH_ID =" + attach.getAttachID()+ "," +
 				" NOTE_ID ="       + attach.getNoteID()  + "," +
-				" DATA ='"          + attach.getAttach()  + "';";
+				" DATA ='"          + attach.getAttach()  + "'" +
+				" WHERE ATTACH_ID =" + attach.getAttachID()+ ";";
 		SQLiteDatabase db = instance.getWritableDatabase();
 		db.execSQL(query);
 	}
@@ -513,9 +515,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		String query = "";
 		for(Attachment attach : attaches){
 			query +=" UPDATE " + ATTACHESTABLE_NAME +
-					" SET ATTACH_ID =" + attach.getAttachID() + "," +
-					" NOTE_ID =" + attach.getNoteID() + "," +
-					" DATA ='" + attach.getAttach() + "';";
+					" NOTE_ID ="       + attach.getNoteID()  + "," +
+					" DATA ='"          + attach.getAttach()  + "'" +
+					" WHERE ATTACH_ID =" + attach.getAttachID()+ ";";
 		}
 		SQLiteDatabase db = instance.getWritableDatabase();
 		db.execSQL(query);
@@ -622,7 +624,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				" NOTE_ID = '"      + alarm.getNoteID()   + "'," +
 				" BEFORE = '"       + alarm.getBefore()    + "'," +
 				" ALARM = "  		+ alarm.getAlarmTime().getTime() + "," +
-				" SNOOZE = "        + alarm.getSnooze()    + "," +
+				" SNOOZE = "        + alarm.getSnooze()    +
 				" WHERE NOTE_ID = " + alarm.getNoteID()   + ";";
 
 		SQLiteDatabase db = instance.getWritableDatabase();
@@ -636,7 +638,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					" NOTE_ID = '"      + alarm.getNoteID()   + "'," +
 					" BEFORE = '"       + alarm.getBefore()    + "'," +
 					" ALARM = "  		+ alarm.getAlarmTime().getTime() + "," +
-					" SNOOZE = "        + alarm.getSnooze()    + "," +
+					" SNOOZE = "        + alarm.getSnooze()    +
 					" WHERE NOTE_ID = " + alarm.getNoteID()   + ";";
 		}
 		SQLiteDatabase db = instance.getWritableDatabase();
