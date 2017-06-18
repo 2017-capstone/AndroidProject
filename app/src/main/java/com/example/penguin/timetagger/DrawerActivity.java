@@ -14,13 +14,9 @@ import android.view.MenuItem;
 
 import com.example.penguin.timetagger.Adapters.NoteGridViewAdapter;
 import com.example.penguin.timetagger.Database.DatabaseHelper;
-import com.example.penguin.timetagger.Fragments.AlarmFragment;
-import com.example.penguin.timetagger.Fragments.AlarmListFragment;
-import com.example.penguin.timetagger.Fragments.NoteFragment;
 import com.example.penguin.timetagger.Fragments.SettingsFragment;
 import com.example.penguin.timetagger.Fragments.NoteListFragment;
 import com.example.penguin.timetagger.Fragments.TagListFragment;
-import com.example.penguin.timetagger.R;
 
 import java.util.List;
 
@@ -101,7 +97,7 @@ public class DrawerActivity extends AppCompatActivity
             movetoFragment(new NoteListFragment());
 
         } else if (id == R.id.nav_total_alarm) {
-            movetoFragment(new AlarmListFragment());
+            movetoFragment(new NoteListFragment());
 
 
         } else if (id == R.id.nav_tagsettings) {
