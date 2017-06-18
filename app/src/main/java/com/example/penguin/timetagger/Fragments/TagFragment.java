@@ -171,7 +171,7 @@ public class TagFragment extends Fragment implements DatePickerDialog.OnDateSetL
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
-		if(id==R.id.action_save){
+		if(id==R.id.action_save_tag){
 			timeTag.setTimes(tla.getTimes());
 			timeTag.setTag(tagName.getText().toString());
 			try {

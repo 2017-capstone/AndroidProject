@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import com.example.penguin.timetagger.Attachment;
 import com.example.penguin.timetagger.Database.DatabaseHelper;
-import com.example.penguin.timetagger.Fragments.AlarmFragment;
 import com.example.penguin.timetagger.Fragments.NoteFragment;
 import com.example.penguin.timetagger.Note;
 import com.example.penguin.timetagger.R;
@@ -74,7 +73,6 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
             cv = (CardView) v.findViewById(R.id.noteItem);
             cb = (CheckBox) v.findViewById(R.id.noteCheckBox);
             img = (ImageView) v.findViewById(R.id.noteItemImage);
-            alarmBtn = (Button) v.findViewById(R.id.noteAlarm);
         }
     }
 
@@ -200,23 +198,6 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
                 return true;
             }
         });
-
-        // 뒤로가기 버튼 처리는 액티비티에서 해결
-
-        // 알람 설정 버튼
-        holder.alarmBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Note note = noteItems.get(position);
-                AlarmFragment fragment = AlarmFragment.newInstance(note);
-
-                ((FragmentActivity) context).getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.frame_content, fragment)
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
     }
 
     @Override
@@ -224,4 +205,3 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
         return noteItems.size();
     }
 }
-
