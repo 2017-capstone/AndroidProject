@@ -60,6 +60,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Cursor cursor = db.rawQuery("SELECT MAX(NOTE_ID) from notes", null);
 		cursor.moveToFirst();
 		note.setNoteID(cursor.getInt(0));
+		note.getAttaches().get(0).setNoteID(cursor.getInt(0));
 		cursor.close();
 
 		// Attachment
