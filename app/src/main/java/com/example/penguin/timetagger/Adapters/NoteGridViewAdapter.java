@@ -18,6 +18,7 @@ import com.example.penguin.timetagger.Database.DatabaseHelper;
 import com.example.penguin.timetagger.Fragments.NoteFragment;
 import com.example.penguin.timetagger.Note;
 import com.example.penguin.timetagger.R;
+import com.example.penguin.timetagger.TimeTag;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -100,7 +101,14 @@ public class NoteGridViewAdapter extends RecyclerView.Adapter<NoteGridViewAdapte
 
     public NoteGridViewAdapter(Context context, int tag_id){
         this.context = context;
-        this.noteItems = DatabaseHelper.selectNotes(tag_id);
+        if(tag_id != -1) this.noteItems = DatabaseHelper.selectNotes(tag_id);
+        else{
+            this.noteItems = DatabaseHelper.selectNotes(0);
+            List<TimeTag> tagCount = DatabaseHelper.selectAllTags();
+            for(int i = 1; i < tagCount.size(); i++){
+                this.noteItems.addAll(DatabaseHelper.selectNotes(i));
+            }
+        }
         //this.noteItems = noteItems;
     }
 

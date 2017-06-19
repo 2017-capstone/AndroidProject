@@ -1,6 +1,7 @@
 package com.example.penguin.timetagger.Fragments;
 
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.INotificationSideChannel;
@@ -70,7 +71,7 @@ public class NoteListFragment extends Fragment {
             tag_name = timeTag.getTag();
         }else {
             tag_name = "AllTags";
-            tag_id = 0;
+            tag_id = -1;
         }
         EditText etTag = (EditText)(getActivity()).findViewById(R.id.toolbar_et);
         etTag.setText(tag_name);
@@ -97,6 +98,7 @@ public class NoteListFragment extends Fragment {
             rv.setLayoutManager(sgl);
 
             nia = new NoteGridViewAdapter(getActivity(), tag_id);
+
             rv.setAdapter(nia);
             nia.notifyDataSetChanged();
         }catch (Exception e){
@@ -116,7 +118,6 @@ public class NoteListFragment extends Fragment {
         int id = item.getItemId();
 
         if (id == R.id.action_save) {
-
             return true;
         }
         else if (id == R.id.action_delete_note) {
@@ -135,6 +136,8 @@ public class NoteListFragment extends Fragment {
     }
 
     private void movetoNoteFragment(Note note){
+        if(tag_id == -1) tag_id = 0;
+        note.setTagID(tag_id);
         NoteFragment fragment = NoteFragment.newInstance(note);
 
         getFragmentManager()
